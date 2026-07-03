@@ -12,6 +12,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: smarthire_ats
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     defaults:
       run:
         working-directory: back-end
@@ -22,13 +36,44 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          extensions: mbstring, pdo, pdo_mysql, dom, curl, libxml, zip
+          coverage: none
 
-      - run: composer install --no-interaction
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: back-end/vendor
+          key: composer-${{ hashFiles('back-end/composer.lock') }}
+          restore-keys: composer-
 
-      - run: cp .env.example .env
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - run: php artisan key:generate
+      - name: Copy .env
+        run: cp .env.example .env
 
-      - run: php artisan config:clear
+      - name: Set test DB credentials
+        run: |
+          sed -i 's/DB_DATABASE=ats_db/DB_DATABASE=smarthire_ats/' .env
+          sed -i 's/DB_USERNAME=root/DB_USERNAME=root/' .env
+          sed -i 's/DB_PASSWORD=/DB_PASSWORD=root/' .env
 
-      - run: php artisan route:clear
+      - name: Generate app key
+        run: php artisan key:generate
+
+      - name: Clear application cache
+        run: |
+          php artisan config:clear
+          php artisan route:clear
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Seed roles & permissions
+        run: php artisan db:seed --class=RolesAndPermissionsSeeder --force
+
+      - name: Run Laravel Pint (code style)
+        run: vendor/bin/pint --test
+
+      - name: Run Pest tests
+        run: vendor/bin/pest --ci
