@@ -73,7 +73,7 @@ jobs:
         run: php artisan db:seed --class=RolesAndPermissionsSeeder --force
 
       - name: Run Laravel Pint (code style)
-        run: vendor/bin/pint --test
+        run: vendor/bin/pint
 
       - name: Run Pest tests
         run: vendor/bin/pest --ci
