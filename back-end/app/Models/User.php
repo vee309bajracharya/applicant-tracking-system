@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Company;
 use App\Models\PasswordResetOtp;
 use App\Models\SocialAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -75,5 +77,13 @@ class User extends Authenticatable
     public function passwordResetOtps(): HasMany
     {
         return $this->hasMany(PasswordResetOtp::class, 'email', 'email');
+    }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'company_users')
+            ->as('company_user')
+            ->withPivot('designation', 'joined_at')
+            ->withTimestamps();
     }
 }
