@@ -4,6 +4,9 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Company\CompanyController;
+use App\Http\Controllers\Company\CompanyUserController;
+use App\Http\Controllers\Company\DepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +53,33 @@ Route::prefix('v1')->group(function () {
             Route::patch('/users/{user}/activate', [UserManagementController::class, 'activate'])->name('users.activate');
             Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
         });
+
+        // Organization module (companies and departments)
+        Route::prefix('companies')->name('companies.')->middleware('permission:companies.manage')->group(function () {
+            Route::get('/', [CompanyController::class, 'index'])->name('index');
+            Route::get('/{company}', [CompanyController::class, 'show'])->name('show');
+            Route::post('/', [CompanyController::class, 'store'])->name('store');
+            Route::patch('/{company}', [CompanyController::class, 'update'])->name('update');
+            Route::delete('/{company}', [CompanyController::class, 'destroy'])->name('destroy');
+            Route::post('/{company}/users', [CompanyUserController::class, 'store'])->name('users.store');
+            Route::delete('/{company}/users/{user}', [CompanyUserController::class, 'destroy'])->name('users.destroy');
+
+            // read —> admin + hr_manager
+            Route::middleware('permission:departments.view')->group(function () {
+                Route::get('/{company}/departments', [DepartmentController::class, 'index'])->name('index');
+            });
+        });
+
+        Route::prefix('departments')->name('departments.')->group(function () {
+
+            // write — admin only
+            Route::middleware('permission:departments.manage')->group(function () {
+                Route::post('/', [DepartmentController::class, 'store'])->name('store');
+                Route::patch('/{department}', [DepartmentController::class, 'update'])->name('update');
+                Route::delete('/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
+            });
+        });
+
     });
 
     // invited staff - set initial password (uses invite token and no sanctum requires)
