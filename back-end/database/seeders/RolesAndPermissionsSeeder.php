@@ -30,6 +30,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'companies.manage',
             'departments.manage',
 
+            // Read access (admin + HR manager)
+            'departments.view',
+
             // job lifecycle (HR + Admin)
             'jobs.create',
             'jobs.edit',
@@ -74,6 +77,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'reports.export',
             'applications.view',
             'interviews.manage',
+            'departments.view',
         ]);
 
         // recruiter
