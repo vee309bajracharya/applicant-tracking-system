@@ -53,6 +53,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'profile.manage',
             'resume.upload',
             'applications.self.view', //read-only - own pipeline status
+
+            'skills.manage', //admin master skill taxonomy CRUD
+            'candidates.view', // HR + recruiter browse candidate profiles
+            'resumes.view', // HR + recruiter gate resume download
         ];
 
         foreach ($permissions as $permission) {
@@ -78,6 +82,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'applications.view',
             'interviews.manage',
             'departments.view',
+            'candidates.view',
+            'resumes.view',
         ]);
 
         // recruiter
@@ -88,6 +94,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'applications.screen',
             'interviews.manage',
             'candidate.notes.create',
+            'candidates.view',
+            'resumes.view',
         ]);
 
         // candidate
