@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -51,12 +52,11 @@ class CandidateProfile extends Model
     public function resumes(): HasMany
     {
         return $this->hasMany(Resume::class, 'candidate_id');
-        ;
     }
 
-    public function primaryResume(): HasMany
+    public function primaryResume(): HasOne
     {
-        return $this->hasMany(Resume::class, 'candidate_id')->where('is_primary', true);
+        return $this->hasOne(Resume::class, 'candidate_id')->where('is_primary', true);
     }
 
     public function skills(): BelongsToMany
@@ -79,5 +79,10 @@ class CandidateProfile extends Model
         $this->update(['profile_completion_percentage' => $total]);
 
         return $total;
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(Application::class, 'candidate_id');
     }
 }

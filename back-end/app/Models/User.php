@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Company;
+use App\Models\Job;
 use App\Models\PasswordResetOtp;
 use App\Models\SocialAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -85,5 +86,10 @@ class User extends Authenticatable
             ->as('company_user')
             ->withPivot('designation', 'joined_at')
             ->withTimestamps();
+    }
+
+    public function createdJobs(): HasMany
+    {
+        return $this->hasMany(Job::class, 'created_by');
     }
 }

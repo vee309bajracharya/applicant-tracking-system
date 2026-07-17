@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\Department;
+use App\Models\Job;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\LogOptions;
@@ -43,5 +45,10 @@ class Company extends Model
             ->as('company_user')
             ->withPivot('designation', 'joined_at')
             ->withTimestamps();
+    }
+
+    public function jobs(): HasMany
+    {
+        return $this->hasMany(Job::class,'company_id');
     }
 }
