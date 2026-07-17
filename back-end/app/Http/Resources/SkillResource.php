@@ -21,6 +21,10 @@ class SkillResource extends JsonResource
                 isset($this->candidate_skill),
                 fn() => $this->candidate_skill->proficiency_level
             ),
+            'importance' => $this->when(
+                isset($this->job_skill),
+                fn() => $this->job_skill->importance
+            ),
         ];
     }
 }
