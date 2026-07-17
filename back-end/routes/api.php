@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Application\ApplicationController;
+use App\Http\Controllers\Application\CandidateApplicationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -11,7 +13,7 @@ use App\Http\Controllers\Candidate\ResumeController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Company\CompanyUserController;
 use App\Http\Controllers\Company\DepartmentController;
-use FontLib\Table\Type\name;
+use App\Http\Controllers\Job\JobController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -121,6 +123,34 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{skill}', [SkillController::class, 'destroy'])->name('destroy');
         });
 
+        // Phase 4 : Job & Application Module
+        Route::prefix('jobs')->name('jobs.')->group(function () {
+
+            // anyone allowed to view job postings
+            Route::middleware('permission:jobs.view')->group(function () {
+                Route::get('/', [JobController::class, 'index'])->name('index');
+                Route::get('/{job}', [JobController::class, 'show'])->name('show');
+            });
+
+            // HR Manager / Recruiter manage jobs
+            Route::post('/', [JobController::class, 'store'])->middleware('permission:jobs.create')->name('store');
+            Route::patch('/{job}', [JobController::class, 'update'])->middleware('permission:jobs.edit')->name('update');
+            Route::patch('/{job}/close', [JobController::class, 'close'])->middleware('permission:jobs.close')->name('close');
+            Route::delete('/{job}', [JobController::class, 'destroy'])->middleware('permission:jobs.edit')->name('destroy');
+        });
+
+        // Candidate Applications
+        Route::prefix('candidate/applications')->name('candidate.applications.')->middleware('role:candidate')->group(function () {
+            Route::get('/', [CandidateApplicationController::class, 'index'])->name('index');
+            Route::post('/', [CandidateApplicationController::class, 'store'])->name('store');
+        });
+
+        // HR / Recruiter Application Management
+        Route::prefix('applications')->name('applications.')->middleware('permission:applications.view')->group(function () {
+            Route::get('/', [ApplicationController::class, 'index'])->name('index');
+            Route::get('/{application}', [ApplicationController::class, 'show'])->name('show');
+            Route::patch('/{application}/status', [ApplicationController::class, 'updateStatus'])->name('status');
+        });
     });
 
     // invited staff - set initial password (uses invite token and no sanctum requires)

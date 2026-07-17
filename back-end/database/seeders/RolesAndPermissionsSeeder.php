@@ -53,6 +53,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'profile.manage',
             'resume.upload',
             'applications.self.view', //read-only - own pipeline status
+            'applications.create', // self-submit application
 
             'skills.manage', //admin master skill taxonomy CRUD
             'candidates.view', // HR + recruiter browse candidate profiles
@@ -90,7 +91,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $recruiter = Role::firstOrCreate(['name' => 'recruiter', 'guard_name' => 'sanctum']);
         $recruiter->syncPermissions([
             'jobs.view',
-            'applications.view',
             'applications.screen',
             'interviews.manage',
             'candidate.notes.create',
@@ -104,6 +104,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'profile.manage',
             'resume.upload',
             'applications.self.view',
+            'applications.create',
+            'jobs.view',
         ]);
 
         $this->command->info('Roles and Permissions seeded');
