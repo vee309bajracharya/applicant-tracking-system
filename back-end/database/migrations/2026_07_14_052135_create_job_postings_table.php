@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['company_id', 'status'], 'idx_jobs_comany_status');
+            $table->index(['company_id', 'status'], 'idx_jobs_company_status');
             $table->index('deadline', 'idx_jobs_deadline');
             $table->fullText(['title', 'description'], 'ft_jobs_title_desc');
         });
