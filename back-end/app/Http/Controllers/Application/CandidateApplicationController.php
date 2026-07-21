@@ -7,12 +7,18 @@ use App\Http\Requests\Application\StoreApplicationRequest;
 use App\Http\Resources\ApplicationResource;
 use App\Models\ApplicationStatusHistory;
 use App\Models\CandidateProfile;
+use App\Services\MatchScoreService;
+use App\Services\NotificationService;
 use App\Traits\LoadsApplicationRelations;
 use Illuminate\Http\Request;
 
 class CandidateApplicationController extends Controller
 {
     use LoadsApplicationRelations;
+
+    public function __construct(protected MatchScoreService $matcher, protected NotificationService $notifier)
+    {
+    }
 
     // GET /candidate/applications — own application history + live status
     public function index(Request $request)
@@ -54,7 +60,14 @@ class CandidateApplicationController extends Controller
             'created_at' => now(),
         ]);
 
-        // TODO Phase 5: trigger keyword extraction + initial match score build here
+        // build initial match score (skill/experience/keyword/tfidf breakdown)
+        $this->matcher->generate($application);
+
+        $this->notifier->dispatch(
+            $request->user()->id,
+            'Application received',
+            "We've received your application for \"{$application->job->title}\"."
+        );
 
         return ApplicationResource::make($application->fresh()->load($this->applicationRelations()))
             ->response()

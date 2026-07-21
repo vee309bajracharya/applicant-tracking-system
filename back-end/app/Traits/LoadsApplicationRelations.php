@@ -14,6 +14,7 @@ trait LoadsApplicationRelations
             'candidateProfile.user',
             'resume',
             'statusHistory.changedBy',
+            'matchScore',
         ];
     }
 }

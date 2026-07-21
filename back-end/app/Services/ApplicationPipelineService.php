@@ -15,6 +15,10 @@ class ApplicationPipelineService
     // Rejected reachable from these — a soft terminal branch, not part of main sequence
     protected const REJECTABLE_FROM = ['screening', 'shortlisted', 'interview', 'selected'];
 
+    public function __construct(protected NotificationService $notifier)
+    {
+    }
+
     public function transition(Application $application, string $newStatus, int $changedBy, ?string $reason = null): Application
     {
         $current = $application->status;
@@ -23,7 +27,7 @@ class ApplicationPipelineService
             throw new InvalidArgumentException("Cannot transition application from '{$current}' to '{$newStatus}'.");
         }
 
-        return DB::transaction(function () use ($application, $current, $newStatus, $changedBy, $reason) {
+        $updated = DB::transaction(function () use ($application, $current, $newStatus, $changedBy, $reason) {
             $application->update(['status' => $newStatus]);
 
             ApplicationStatusHistory::create([
@@ -35,10 +39,23 @@ class ApplicationPipelineService
                 'created_at' => now(),
             ]);
 
-            // TODO Phase 8: fire notification event here (Application::StatusChanged)
-
             return $application->fresh('statusHistory');
         });
+
+        $this->notifyCandidateOfStatusChange($updated, $newStatus);
+
+        return $updated;
+    }
+
+    protected function notifyCandidateOfStatusChange(Application $application, string $newStatus): void
+    {
+        $application->loadMissing(['candidateProfile', 'job']);
+
+        $this->notifier->dispatch(
+            $application->candidateProfile->user_id,
+            'Application status updated',
+            "Your application for \"{$application->job->title}\" is now '{$newStatus}'."
+        );
     }
 
     protected function isValidTransition(string $from, string $to): bool

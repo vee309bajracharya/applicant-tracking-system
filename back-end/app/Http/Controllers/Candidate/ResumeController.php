@@ -7,12 +7,17 @@ use App\Http\Requests\Candidate\StoreResumeRequest;
 use App\Http\Resources\ResumeResource;
 use App\Models\CandidateProfile;
 use App\Models\Resume;
+use App\Services\ResumeTextExtractionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ResumeController extends Controller
 {
+    public function __construct(protected ResumeTextExtractionService $extractor)
+    {
+    }
+
     public function index(Request $request)
     {
         $profile = CandidateProfile::where('user_id', $request->user()->id)->firstOrFail();
@@ -24,16 +29,22 @@ class ResumeController extends Controller
     {
         $profile = CandidateProfile::where('user_id', $request->user()->id)->firstOrFail();
         $file = $request->file('resume');
-        $uuidName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('resumes', $uuidName, 'local'); // storage/app/resumes — private disk, not public
+        $extension = $file->getClientOriginalExtension();
+        $uuidName = Str::uuid() . '.' . $extension;
+        $path = $file->storeAs('resumes', $uuidName, 'local'); // storage/app/resumes — private disk
 
         $isPrimary = $request->boolean('is_primary', false);
         if ($isPrimary)
             $profile->resumes()->update(['is_primary' => false]);
 
+        //  plaintext extraction — feeds MatchScoreService's
+        // keyword_score/tfidf_score. Never blocks the upload if it fails/returns null.
+        $extractedText = $this->extractor->extract(Storage::disk('local')->path($path), $extension);
+
         $resume = $profile->resumes()->create([
             'file_name' => $file->getClientOriginalName(),
             'file_path' => $path,
+            'extracted_text' => $extractedText,
             'is_primary' => $isPrimary,
             'uploaded_at' => now(),
         ]);

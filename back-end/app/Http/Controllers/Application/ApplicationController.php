@@ -7,6 +7,7 @@ use App\Http\Requests\Application\UpdateApplicationStatusRequest;
 use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
 use App\Services\ApplicationPipelineService;
+use App\Services\MatchScoreService;
 use App\Traits\LoadsApplicationRelations;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -15,7 +16,7 @@ class ApplicationController extends Controller
 {
     use LoadsApplicationRelations;
 
-    public function __construct(protected ApplicationPipelineService $pipeline)
+    public function __construct(protected ApplicationPipelineService $pipeline, protected MatchScoreService $matcher)
     {
     }
 
@@ -28,6 +29,14 @@ class ApplicationController extends Controller
 
         if ($status = $request->query('status'))
             $query->where('status', $status);
+
+        // sort=match_score ranks by computed final_score desc (Candidate Ranking Algorithm)
+        if ($request->query('sort') === 'match_score') {
+            $applications = $query->get();
+            $ranked = $this->matcher->rankByFinalScore($applications);
+
+            return ApplicationResource::collection($ranked);
+        }
 
         return ApplicationResource::collection($query->latest('applied_at')->paginate(10));
     }
@@ -61,9 +70,6 @@ class ApplicationController extends Controller
         } catch (InvalidArgumentException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
-
-        // TODO Phase 8: dispatch notification email on status change
-
 
         return ApplicationResource::make($updated->load($this->applicationRelations()));
     }

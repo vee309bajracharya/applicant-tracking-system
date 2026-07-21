@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Models\CandidateProfile;
+use App\Models\Interview;
+use App\Models\MatchScore;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -53,5 +56,15 @@ class Application extends Model
     public function statusHistory(): HasMany
     {
         return $this->hasMany(ApplicationStatusHistory::class, 'application_id');
+    }
+
+    public function interviews(): HasMany
+    {
+        return $this->hasMany(Interview::class, 'application_id');
+    }
+
+    public function matchScore(): HasOne
+    {
+        return $this->hasOne(MatchScore::class, 'application_id');
     }
 }

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>OTP – {{ config('app.name') }}</title>
+    <title>{{ $notifTitle }} – {{ config('app.name') }}</title>
     <style>
         body {
             font-family: Inter, system-ui, sans-serif;
@@ -20,17 +20,14 @@
             padding: 40px;
         }
 
-        .otp-box {
-            font-size: 36px;
-            font-weight: 700;
-            letter-spacing: 10px;
-            text-align: center;
+        .message-box {
             background: #f3f4f6;
             border-radius: 6px;
             padding: 20px;
             margin: 24px 0;
             color: #111827;
-            font-family: monospace;
+            font-size: 15px;
+            line-height: 1.5;
         }
 
         .label {
@@ -51,20 +48,11 @@
 <body>
     <div class="container">
         <h1 style="color:#fff; margin-top:0;text-align:center">{{ config('app.name') }}</h1>
-        <h2 style="color:#fff; margin-top:0;">
-            @if($purpose === 'Email Verification')
-                Verify Your Email
-            @else
-                Password Reset Request
-            @endif
-        </h2>
+        <h2 style="color:#fff; margin-top:0;">{{ $notifTitle }}</h2>
 
-        <p class="label">Use the OTP below to complete your {{ $purpose }}. It expires in <strong>10 minutes</strong>.
-        </p>
+        <div class="message-box">{{ $notifMessage }}</div>
 
-        <div class="otp-box">{{ $otp }}</div>
-
-        <p class="label">If you didn't request this, ignore this email. Your account remains secure.</p>
+        <p class="label">You can also view this in your Notifications inbox on the platform.</p>
 
         <div class="footer">
             Do not reply to this email.
