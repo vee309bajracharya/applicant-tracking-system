@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>OTP – ATS</title>
+    <title>OTP – {{ config('app.name') }}</title>
     <style>
         body {
             font-family: Inter, system-ui, sans-serif;
@@ -50,7 +50,7 @@
 
 <body>
     <div class="container">
-        <h1 style="color:#fff; margin-top:0;text-align:center">SmartHire ATS</h1>
+        <h1 style="color:#fff; margin-top:0;text-align:center">{{ config('app.name') }}</h1>
         <h2 style="color:#fff; margin-top:0;">
             @if($purpose === 'Email Verification')
                 Verify Your Email

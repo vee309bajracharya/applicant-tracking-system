@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Invitation – ATS</title>
+    <title>Invitation – {{ config('app.name') }}</title>
     <style>
         body {
             font-family: Inter, system-ui, sans-serif;
@@ -64,10 +64,10 @@
     <div class="container">
         <div class="badge">{{ ucfirst(str_replace('_', ' ', $role)) }}</div>
 
-        <h2 style="color:#111827; margin-top:0;">Welcome to SmartHire ATS, {{ $fullname }}</h2>
+        <h2 style="color:#111827; margin-top:0;">Welcome to {{ config('app.name') }}, {{ $fullname }}</h2>
 
         <p style="color:#374151;">
-            You've been invited to join the ATS platform as a
+            You've been invited to join the {{ config('app.name') }} platform as a
             <strong>{{ ucfirst(str_replace('_', ' ', $role)) }}</strong>.
             Set your password to activate your account.
         </p>
