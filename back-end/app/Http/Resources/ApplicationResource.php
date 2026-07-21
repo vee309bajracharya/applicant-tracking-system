@@ -20,11 +20,21 @@ class ApplicationResource extends JsonResource
     {
         return [
             'id' => $this->id,
+
+            'job_id' => $this->job_id,
             'job' => JobResource::make($this->whenLoaded('job')),
+
+            'candidate_id' => $this->candidate_id,
             'candidate_profile' => CandidateProfileResource::make($this->whenLoaded('candidateProfile')),
+
+            'resume_id' => $this->resume_id,
             'resume' => ResumeResource::make($this->whenLoaded('resume')),
+
             'status' => $this->status,
             'status_history' => ApplicationStatusHistoryResource::collection($this->whenLoaded('statusHistory')),
+
+            'match_score' => MatchScoreResource::make($this->whenLoaded('matchScore')),
+
             'applied_at' => $this->applied_at,
             'created_at' => $this->created_at,
         ];

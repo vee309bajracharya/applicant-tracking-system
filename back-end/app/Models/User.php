@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use App\Models\Company;
+use App\Models\Interview;
+use App\Models\InterviewFeedback;
 use App\Models\Job;
+use App\Models\Notification;
 use App\Models\PasswordResetOtp;
 use App\Models\SocialAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -92,4 +95,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Job::class, 'created_by');
     }
+
+    public function interviews(): HasMany
+    {
+        return $this->hasMany(Interview::class, 'recruiter_id');
+    }
+
+    public function interviewFeedbacks(): HasMany
+    {
+        return $this->hasMany(InterviewFeedback::class, 'reviewer_id');
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
+
 }
