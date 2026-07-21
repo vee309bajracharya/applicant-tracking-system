@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Application\ApplicationController;
 use App\Http\Controllers\Application\CandidateApplicationController;
+use App\Http\Controllers\Application\MatchScoreController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -13,7 +14,10 @@ use App\Http\Controllers\Candidate\ResumeController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Company\CompanyUserController;
 use App\Http\Controllers\Company\DepartmentController;
+use App\Http\Controllers\Interview\InterviewController;
+use App\Http\Controllers\Interview\InterviewFeedbackController;
 use App\Http\Controllers\Job\JobController;
+use App\Http\Controllers\Notification\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -130,6 +134,9 @@ Route::prefix('v1')->group(function () {
             Route::middleware('permission:jobs.view')->group(function () {
                 Route::get('/', [JobController::class, 'index'])->name('index');
                 Route::get('/{job}', [JobController::class, 'show'])->name('show');
+
+                // Phase 5(portion) : candidates for a job, ranked desc by computed final_score
+                Route::get('/{job}/applications/ranked', [MatchScoreController::class, 'rankedForJob'])->middleware('permission:applications.view')->name('applications.ranked');
             });
 
             // HR Manager / Recruiter manage jobs
@@ -150,6 +157,37 @@ Route::prefix('v1')->group(function () {
             Route::get('/', [ApplicationController::class, 'index'])->name('index');
             Route::get('/{application}', [ApplicationController::class, 'show'])->name('show');
             Route::patch('/{application}/status', [ApplicationController::class, 'updateStatus'])->name('status');
+
+            // Phase 5(portion): match score tooling
+            Route::patch('/{application}/match-score', [MatchScoreController::class, 'recompute'])->name('match-score.compute');
+            Route::get('/{application}/skill-gap', [MatchScoreController::class, 'skillGap'])->name('skill-gap');
+
+            // Phase 5(portion): interviews scoped to an application
+            Route::get('/{application}/interviews', [InterviewController::class, 'index'])->middleware('permission:interviews.manage')->name('interviews.index');
+        });
+
+        // Phase 5: interview scheduling & feedback — HR Manager / Recruiter only
+        Route::prefix('interviews')->name('interviews.')->group(function () {
+            Route::middleware('permission:interviews.manage')->group(function () {
+                Route::post('/', [InterviewController::class, 'store'])->name('store');
+                Route::patch('/{interview}', [InterviewController::class, 'update'])->name('update');
+                Route::patch('/{interview}/cancel', [InterviewController::class, 'cancel'])->name('cancel');
+            });
+
+            // feedback: recruiter (candidate.notes.create) OR HR/Admin (interviews.manage) - permission checked in the StoreInterviewFeedbackRequest
+            Route::post('/{interview}/feedback', [InterviewFeedbackController::class, 'store'])->name('feedback.store');
+        });
+
+        // Phase 5: correcting/removing a feedback entry — own-entry-or-interviews.manage - permission checked in the UpdateInterviewFeedbackRequest
+        Route::prefix('interview-feedback')->name('interview-feedback.')->group(function () {
+            Route::patch('/{feedback}', [InterviewFeedbackController::class, 'update'])->name('update');
+            Route::delete('/{feedback}', [InterviewFeedbackController::class, 'destroy'])->name('destroy');
+        });
+
+        // Phase 5: notifications
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::patch('/{notification}/read', [NotificationController::class, 'markRead'])->name('read');
         });
     });
 
