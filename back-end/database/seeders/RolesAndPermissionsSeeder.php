@@ -58,6 +58,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'skills.manage', //admin master skill taxonomy CRUD
             'candidates.view', // HR + recruiter browse candidate profiles
             'resumes.view', // HR + recruiter gate resume download
+
+            'faq.manage', // admin manages the FAQ knowledge base the chatbot reads from
         ];
 
         foreach ($permissions as $permission) {

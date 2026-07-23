@@ -11,9 +11,11 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Candidate\CandidateProfileController;
 use App\Http\Controllers\Candidate\CandidateSkillController;
 use App\Http\Controllers\Candidate\ResumeController;
+use App\Http\Controllers\Chatbot\ChatbotController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Company\CompanyUserController;
 use App\Http\Controllers\Company\DepartmentController;
+use App\Http\Controllers\Faq\FaqController;
 use App\Http\Controllers\Interview\InterviewController;
 use App\Http\Controllers\Interview\InterviewFeedbackController;
 use App\Http\Controllers\Job\JobController;
@@ -188,6 +190,25 @@ Route::prefix('v1')->group(function () {
         Route::prefix('notifications')->name('notifications.')->group(function () {
             Route::get('/', [NotificationController::class, 'index'])->name('index');
             Route::patch('/{notification}/read', [NotificationController::class, 'markRead'])->name('read');
+        });
+
+        // Phase 6: FAQ knowledge base
+        Route::prefix('faqs')->name('faqs.')->group(function () {
+            Route::get('/', [FaqController::class, 'index'])->name('index');
+
+            Route::middleware('permission:faq.manage')->group(function () {
+                Route::post('/', [FaqController::class, 'store'])->name('store');
+                Route::patch('/{faq}', [FaqController::class, 'update'])->name('update');
+                Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
+            });
+        });
+
+        // Phase 6: Local FAQ Dynamic Database Chatbot
+        Route::prefix('chatbot/conversations')->name('chatbot.conversations.')->group(function () {
+            Route::get('/', [ChatbotController::class, 'index'])->name('index');
+            Route::get('/{conversation}', [ChatbotController::class, 'show'])->name('show');
+            Route::post('/', [ChatbotController::class, 'store'])->name('store');
+            Route::post('/{conversation}/messages', [ChatbotController::class, 'sendMessage'])->name('messages.store');
         });
     });
 
