@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ChatbotConversation;
 use App\Models\Company;
 use App\Models\Interview;
 use App\Models\InterviewFeedback;
@@ -109,6 +110,11 @@ class User extends Authenticatable
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(ChatbotConversation::class, 'user_id');
     }
 
 }
