@@ -44,8 +44,8 @@ Route::prefix('v1')->group(function () {
 
         // OAuth for candidates only
         Route::prefix('oauth')->name('oauth.')->group(function () {
-            Route::post('/{provider}/redirect', [OAuthController::class, 'redirect'])->name('redirect');
-            Route::post('/{provider}/callback', [OAuthController::class, 'callback'])->name('callback');
+            Route::get('/{provider}/redirect', [OAuthController::class, 'redirect'])->name('redirect');
+            Route::get('/{provider}/callback', [OAuthController::class, 'callback'])->name('callback');
         });
     });
 

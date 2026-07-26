@@ -16,40 +16,33 @@ class OAuthController extends Controller
     private array $allowedProviders = ['google'];
 
     // redirect to provider
-    public function redirect(string $provider): RedirectResponse|JsonResponse
+    public function redirect(string $provider): RedirectResponse
     {
         if (!in_array($provider, $this->allowedProviders)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unsupported OAuth provider',
-            ], 422);
+            return $this->redirectToFrontendWithError('Unsupported OAuth provider');
         }
+
         return Socialite::driver('google')->stateless()->redirect();
     }
 
     // handle provider callback
-    public function callback(string $provider): JsonResponse
+    public function callback(string $provider): RedirectResponse
     {
         if (!in_array($provider, $this->allowedProviders)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unsupported OAuth provider',
-            ], 422);
+            return $this->redirectToFrontendWithError('Unsupported OAuth provider');
         }
 
         try {
             $socialUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'OAuth authentication failed. Please try again',
-            ], 401);
+            return $this->redirectToFrontendWithError('OAuth authentication failed. Please try again');
         }
 
         // check if social account already linked to a user
         $existingSocial = SocialAccount::where('provider', $provider)
             ->where('provider_id', $socialUser->getId())
             ->first();
+
         if ($existingSocial) {
             $user = $existingSocial->user;
         } else {
@@ -80,33 +73,40 @@ class OAuthController extends Controller
         }
 
         if ($user->status === 'suspended') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Account suspended. Contact administrator',
-            ], 403);
+            return $this->redirectToFrontendWithError('Account suspended. Contact administrator');
         }
 
-        $user->update([
-            'last_login_at' => now()
-        ]);
+        $user->update(['last_login_at' => now()]);
 
         $user->tokens()->delete();
         $token = $user->createToken('ats-oauth-token')->plainTextToken;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'OAuth Login Successful.',
-            'data' => [
-                'token' => $token,
-                'user' => [
-                    'id' => $user->id,
-                    'fullname' => $user->fullname,
-                    'email' => $user->email,
-                    'role' => $user->getRoleNames()->first(),
-                    'status' => $user->status,
-                ],
-            ],
-        ], 200);
+        return $this->redirectToFrontendWithSession($token, $user);
+    }
+
+    // success: hand the token/user off to the SPA via URL fragment.
+    private function redirectToFrontendWithSession(string $token, User $user): RedirectResponse
+    {
+        $payload = http_build_query([
+            'token' => $token,
+            'id' => $user->id,
+            'fullname' => $user->fullname,
+            'email' => $user->email,
+            'role' => $user->getRoleNames()->first(),
+            'status' => $user->status,
+        ]);
+
+        return redirect()->away(
+            rtrim(config('app.frontend_url'), '/') . '/oauth/callback#' . $payload
+        );
+    }
+
+    // fail: send the user back to login with a readable error in the query string
+    private function redirectToFrontendWithError(string $message): RedirectResponse
+    {
+        return redirect()->away(
+            rtrim(config('app.frontend_url'), '/') . '/login?oauth_error=' . urlencode($message)
+        );
     }
 
 }
