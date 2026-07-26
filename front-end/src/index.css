@@ -1,0 +1,77 @@
+/* primary font - General Sans */
+@import url("https://fonts.cdnfonts.com/css/general-sans");
+
+@import "tailwindcss";
+
+/* for dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* colors */
+  --color-primary-blue: oklch(47% 0.158 255.5);
+  --color-primary-text: oklch(23.7% 0.035 255.9);
+  --color-secondary-blue: oklch(70.5% 0.139 235.5);
+  --color-box-outline: oklch(0.8765 0.0056 274.96);
+  --color-error-red: oklch(0.5683 0.2157 27.65);
+  --color-success-green: oklch(0.7471 0.2315 144.6);
+  --color-information-purple: oklch(0.446 0.2505 277.18);
+  --color-warning-orange: oklch(0.6872 0.1468 62.72);
+  --color-dark-overlay: hsl(216, 18.07%, 16.27%);
+  --color-dark-hover: hsl(230, 17%, 14%);
+  --color-dark-box-outline: hsl(228, 28%, 35%);
+
+  /* font */
+  --font-general-sans: "General Sans", sans-serif;
+
+  /* responsive */
+  --breakpoint-xs: 12.5rem; /* 200px */
+}
+
+/* custom scrollbar */
+
+::-webkit-scrollbar {
+  width: 0.1rem;
+  height: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-dark-hover rounded-b-lg;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full border-2 border-transparent bg-clip-padding;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* custom styling */
+
+* {
+  @apply transition-colors duration-100;
+}
+
+.inputbox {
+  @apply w-full border border-box-outline rounded-lg px-3 py-2 focus:outline-none;
+}
+
+.wrapper {
+  @apply max-w-7xl mx-auto my-0 px-8 py-3;
+}
+
+.auth-btn {
+  @apply w-full font-medium bg-primary-blue text-white py-2 rounded-lg hover:bg-secondary-blue transition-colors duration-200 cursor-pointer;
+}
+
+.main-style{
+  @apply dark:text-white text-primary-text font-general-sans;
+}
