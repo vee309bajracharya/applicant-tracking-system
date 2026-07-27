@@ -23,9 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
-        // API middleware stack
-        $middleware->statefulApi(); //sanctum stateful for SPA (cookie based)
-    
+        // throttle API routes
+        $middleware->throttleApi();
+
         // aliases
         $middleware->alias([
             'role' => RoleMiddleware::class,
@@ -33,9 +33,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'email.verified' => EnsureEmailVerified::class,
         ]);
-
-        // throttle API routes
-        $middleware->throttleApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
