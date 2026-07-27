@@ -65,6 +65,12 @@ export const useResetPasswordMutation = () =>
     onError: (error) => toast.error(extractErrorMessage(error)),
   });
 
+export const useSetPasswordMutation = () =>
+  useMutation({
+    mutationFn: authService.setPassword,
+    onError: (error) => toast.error(extractErrorMessage(error)),
+  });
+
 export const useLogoutMutation = () => {
   const { clearSession } = useAuth();
   return useMutation({
