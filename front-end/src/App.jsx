@@ -4,8 +4,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import CustomLoader from "./components/common/CustomLoader";
 import ErrorPage from "./pages/ErrorPage";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import RoleProtectedRoute from "./components/common/RoleProtectedRoute";
 import GuestLayout from "./layouts/GuestLayout";
 import MainLayout from "./layouts/MainLayout";
+import { ROLES } from "./constants/roles";
 
 const Home = lazy(() => import("./pages/Home"));
 const Unauthorized = lazy(() => import("./pages/Unauthorized"));
@@ -17,6 +19,8 @@ const ForgotPasswordPage = lazy(() => import("./pages/auth/ForgotPasswordPage"))
 const VerifyResetOtpPage = lazy(() => import("./pages/auth/VerifyResetOtpPage"));
 const ResetPasswordPage = lazy(() => import("./pages/auth/ResetPasswordPage"));
 const OAuthCallbackPage = lazy(() => import("./pages/auth/OAuthCallbackPage"));
+const SetPasswordPage = lazy(() => import("./pages/auth/SetPasswordPage"));
+const UserManagementPage = lazy(() => import("./pages/admin/UserManagementPage"));
 
 const withSuspense = (el) => <Suspense fallback={<CustomLoader />}>{el}</Suspense>;
 
@@ -31,6 +35,7 @@ const router = createBrowserRouter([
       { path: "/forgot-password", element: withSuspense(<ForgotPasswordPage />) },
       { path: "/reset-password/verify", element: withSuspense(<VerifyResetOtpPage />) },
       { path: "/reset-password", element: withSuspense(<ResetPasswordPage />) },
+      { path: "/set-password", element: withSuspense(<SetPasswordPage />) },
     ],
   },
   {
@@ -39,7 +44,15 @@ const router = createBrowserRouter([
     children: [
       {
         element: <MainLayout />,
-        children: [{ path: "/", element: withSuspense(<Home />) }],
+        children: [
+          { path: "/", element: withSuspense(<Home />) },
+          {
+            element: <RoleProtectedRoute allowedRoles={[ROLES.ADMIN]} />,
+            children: [
+              { path: "/admin/users", element: withSuspense(<UserManagementPage />) },
+            ],
+          },
+        ],
       },
     ],
   },
