@@ -79,6 +79,25 @@ class JobController extends Controller
         return response()->json(['success' => true, 'message' => 'Job archived'], 200);
     }
 
+    public function trashed(Request $request)
+    {
+        $query = Job::onlyTrashed()->with($this->jobRelations())->withCount('applications');
+
+        if ($search = $request->query('search'))
+            $query->whereFullText(['title', 'description'], $search);
+
+        return JobResource::collection($query->latest('deleted_at')->paginate(10));
+    }
+
+    public function restore(int $job)
+    {
+        $model = Job::onlyTrashed()->findOrFail($job);
+        $model->restore();
+        $model->update(['status' => 'draft']);
+
+        return JobResource::make($model->fresh()->load($this->jobRelations()));
+    }
+
     protected function syncSkills(Job $job, array $skills): void
     {
         $sync = [];

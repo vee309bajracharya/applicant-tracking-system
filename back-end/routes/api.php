@@ -135,8 +135,10 @@ Route::prefix('v1')->group(function () {
             // anyone allowed to view job postings
             Route::middleware('permission:jobs.view')->group(function () {
                 Route::get('/', [JobController::class, 'index'])->name('index');
+                Route::get('/trashed', [JobController::class, 'trashed'])->middleware('permission:jobs.edit')->name('trashed');
+                Route::patch('/{job}/restore', [JobController::class, 'restore'])->middleware('permission:jobs.edit')->name('restore');
                 Route::get('/{job}', [JobController::class, 'show'])->name('show');
-
+                
                 // Phase 5(portion) : candidates for a job, ranked desc by computed final_score
                 Route::get('/{job}/applications/ranked', [MatchScoreController::class, 'rankedForJob'])->middleware('permission:applications.view')->name('applications.ranked');
             });
