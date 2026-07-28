@@ -21,6 +21,8 @@ const ResetPasswordPage = lazy(() => import("./pages/auth/ResetPasswordPage"));
 const OAuthCallbackPage = lazy(() => import("./pages/auth/OAuthCallbackPage"));
 const SetPasswordPage = lazy(() => import("./pages/auth/SetPasswordPage"));
 const UserManagementPage = lazy(() => import("./pages/admin/UserManagementPage"));
+const CompaniesListPage = lazy(() => import("./pages/companies/CompaniesListPage"));
+const CompanyDetailPage = lazy(() => import("./pages/companies/CompanyDetailPage"));
 
 const withSuspense = (el) => <Suspense fallback={<CustomLoader />}>{el}</Suspense>;
 
@@ -50,6 +52,8 @@ const router = createBrowserRouter([
             element: <RoleProtectedRoute allowedRoles={[ROLES.ADMIN]} />,
             children: [
               { path: "/admin/users", element: withSuspense(<UserManagementPage />) },
+              { path: "/companies", element: withSuspense(<CompaniesListPage />) },
+              { path: "/companies/:companyId", element: withSuspense(<CompanyDetailPage />) },
             ],
           },
         ],
