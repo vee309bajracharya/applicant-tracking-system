@@ -28,7 +28,7 @@ class JobResource extends JsonResource
             'salary_max' => $this->salary_max !== null ? (float) $this->salary_max : null,
             'description' => $this->description,
             'status' => $this->status,
-            'deadline' => $this->deadline,
+            'deadline' => optional($this->deadline)->format('Y-m-d'),
 
             'company_id' => $this->company_id,
             'company' => CompanyResource::make($this->whenLoaded('company')),

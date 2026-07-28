@@ -32,6 +32,7 @@ class UpdateJobRequest extends FormRequest
             'salary_max' => ['sometimes', 'nullable', 'numeric', 'gte:salary_min'],
             'description' => ['sometimes', 'string'],
             'deadline' => ['sometimes', 'nullable', 'date', 'after:today'],
+            'status' => ['sometimes', 'in:open,closed,draft'],
             'skills' => ['sometimes', 'array'],
             'skills.*.skill_id' => ['required_with:skills', 'integer', 'exists:skills,id'],
             'skills.*.importance' => ['sometimes', 'in:required,preferred'],
