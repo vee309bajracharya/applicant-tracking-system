@@ -24,6 +24,15 @@ const UserManagementPage = lazy(() => import("./pages/admin/UserManagementPage")
 const CompaniesListPage = lazy(() => import("./pages/companies/CompaniesListPage"));
 const CompanyDetailPage = lazy(() => import("./pages/companies/CompanyDetailPage"));
 
+const JobsListPage = lazy(() => import("./pages/jobs/JobsListPage"));
+const JobDetailPage = lazy(() => import("./pages/jobs/JobDetailPage"));
+const ArchivedJobsPage = lazy(() => import("./pages/jobs/ArchivedJobsPage"));
+const SkillsAdminPage = lazy(() => import("./pages/admin/SkillsAdminPage"));
+const CandidateProfilePage = lazy(() => import("./pages/candidate/CandidateProfilePage"));
+const MyApplicationsPage = lazy(() => import("./pages/candidate/MyApplicationsPage"));
+const ApplicationsQueuePage = lazy(() => import("./pages/applications/ApplicationsQueuePage"));
+const ApplicationDetailPage = lazy(() => import("./pages/applications/ApplicationDetailPage"));
+
 const withSuspense = (el) => <Suspense fallback={<CustomLoader />}>{el}</Suspense>;
 
 const router = createBrowserRouter([
@@ -48,10 +57,37 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { path: "/", element: withSuspense(<Home />) },
+
+          // Jobs — visible to every authenticated role (all roles hold jobs.view)
+          { path: "/jobs", element: withSuspense(<JobsListPage />) },
+          { path: "/jobs/:jobId", element: withSuspense(<JobDetailPage />) },
+
+          {
+            element: <RoleProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.RECRUITER]} />,
+            children: [{ path: "/jobs/archived", element: withSuspense(<ArchivedJobsPage />) }],
+          },
+
+          {
+            element: <RoleProtectedRoute allowedRoles={[ROLES.CANDIDATE]} />,
+            children: [
+              { path: "/candidate/profile", element: withSuspense(<CandidateProfilePage />) },
+              { path: "/candidate/applications", element: withSuspense(<MyApplicationsPage />) },
+            ],
+          },
+
+          {
+            element: <RoleProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.RECRUITER]} />,
+            children: [
+              { path: "/applications", element: withSuspense(<ApplicationsQueuePage />) },
+              { path: "/applications/:applicationId", element: withSuspense(<ApplicationDetailPage />) },
+            ],
+          },
+
           {
             element: <RoleProtectedRoute allowedRoles={[ROLES.ADMIN]} />,
             children: [
               { path: "/admin/users", element: withSuspense(<UserManagementPage />) },
+              { path: "/admin/skills", element: withSuspense(<SkillsAdminPage />) },
               { path: "/companies", element: withSuspense(<CompaniesListPage />) },
               { path: "/companies/:companyId", element: withSuspense(<CompanyDetailPage />) },
             ],
