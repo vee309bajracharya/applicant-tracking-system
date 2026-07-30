@@ -24,7 +24,7 @@ const companyService = {
 
   store: (payload) =>
     axiosClient.post("/companies", toFormData(payload), {
-      headers: { Accept: "application/json" },
+      headers: { "Content-Type": undefined, Accept: "application/json" },
     }),
 
   update: (companyId, payload) =>
@@ -32,7 +32,7 @@ const companyService = {
       `/companies/${companyId}`,
       toFormData({ ...payload, _method: "PATCH" }),
       {
-        headers: { Accept: "application/json" },
+        headers: { "Content-Type": undefined, Accept: "application/json" },
       }
     ),
 

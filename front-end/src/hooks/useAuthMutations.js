@@ -77,6 +77,9 @@ export const useLogoutMutation = () => {
     mutationFn: authService.logout,
     onSuccess: () => toast.success("Logged out successfully"),
     onError: () => toast.error("Logout request failed, but you've been signed out locally."),
-    onSettled: () => clearSession(), // clear locally even if the API call fails
+    onSettled: () => {
+      clearSession();
+      window.location.href = "/login";
+    },
   });
 };

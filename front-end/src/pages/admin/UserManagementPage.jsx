@@ -121,11 +121,11 @@ const UserManagementPage = () => {
             <UserPlus size={16} /> Invite staff
           </button>
         </div>
-        <div className="w-80">
+        <div>
           <SearchBar
             value={search}
             onChange={resetFiltersAndSearch(setSearch)}
-            placeholder="Search by Name and Email"
+            placeholder="Name and Email"
           />
         </div>
       </section>

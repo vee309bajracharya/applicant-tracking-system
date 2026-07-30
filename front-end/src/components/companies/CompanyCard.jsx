@@ -16,7 +16,7 @@ const CompanyCard = ({ company }) => {
           <img
             src={buildStorageUrl(company.logo)}
             alt={`${company.company_name} logo`}
-            className="w-50 rounded-lg object-cover"
+            className="w-30 rounded-lg object-fill"
           />
         ) : (
           <div className="h-10 w-10 rounded-lg bg-gray-100 dark:bg-dark-hover flex items-center justify-center">
