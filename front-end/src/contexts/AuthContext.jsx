@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useMemo, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import authService from "../services/authService";
 import { ROLE_PERMISSIONS } from "../constants/permissions";
 
@@ -9,6 +10,7 @@ const TOKEN_KEY = "ats_token";
 const USER_KEY = "ats_user";
 
 export const AuthProvider = ({ children }) => {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState(() => {
     const raw = localStorage.getItem(USER_KEY);
     return raw ? JSON.parse(raw) : null;
@@ -16,19 +18,25 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
   const isBootstrapping = false;
 
-  const persistSession = useCallback((newToken, newUser) => {
-    localStorage.setItem(TOKEN_KEY, newToken);
-    localStorage.setItem(USER_KEY, JSON.stringify(newUser));
-    setToken(newToken);
-    setUser(newUser);
-  }, []);
+  const persistSession = useCallback(
+    (newToken, newUser) => {
+      // Drop any query cache from a previous session
+      queryClient.clear();
+      localStorage.setItem(TOKEN_KEY, newToken);
+      localStorage.setItem(USER_KEY, JSON.stringify(newUser));
+      setToken(newToken);
+      setUser(newUser);
+    },
+    [queryClient]
+  );
 
   const clearSession = useCallback(() => {
+    queryClient.clear();
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     setToken(null);
     setUser(null);
-  }, []);
+  }, [queryClient]);
 
   useEffect(() => {
     if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
@@ -49,6 +57,7 @@ export const AuthProvider = ({ children }) => {
       await authService.logout();
     } finally {
       clearSession();
+      window.location.href = "/login";
     }
   }, [clearSession]);
 

@@ -43,7 +43,7 @@ const CompanyDetailPage = () => {
             <img
               src={buildStorageUrl(company.logo)}
               alt={`${company.company_name} logo`}
-              className="w-60 rounded-lg object-cover"
+              className="w-50 rounded-lg object-fill"
             />
           ) : null}
           <div>

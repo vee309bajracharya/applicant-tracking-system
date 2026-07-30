@@ -5,7 +5,7 @@ import companyService from "../services/companyService";
 const extractErrorMessage = (error) =>
   error?.response?.data?.message || "Something went wrong. Please try again.";
 
-export const useCompaniesQuery = (params) =>
+export const useCompaniesQuery = (params, options = {}) =>
   useQuery({
     queryKey: ["companies", params],
     queryFn: async () => {
@@ -13,6 +13,7 @@ export const useCompaniesQuery = (params) =>
       return data;
     },
     placeholderData: (prev) => prev,
+    ...options,
   });
 
 export const useCompanyQuery = (companyId) =>
