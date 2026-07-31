@@ -39,6 +39,11 @@ class ApplicationPipelineService
                 'created_at' => now(),
             ]);
 
+            // the position is filled —> close the job so it stops accepting new applications and drops off the candidate-facing "Open Positions" list.
+            if ($newStatus === 'hired') {
+                $application->job()->where('status', '!=', 'closed')->update(['status' => 'closed']);
+            }
+
             return $application->fresh('statusHistory');
         });
 
