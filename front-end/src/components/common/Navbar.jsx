@@ -3,14 +3,18 @@ import { Moon, Sun, Monitor, LogOut } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useLogoutMutation } from "../../hooks/useAuthMutations";
+import { useAuthMeQuery } from "../../hooks/useAuthMe";
 import MainLogo from "../../assets/images/atsLogo.webp";
 
 const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor };
 
 const Navbar = () => {
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   const { theme, setTheme } = useTheme();
   const logoutMutation = useLogoutMutation();
+  const showCompany = hasRole("hr_manager", "recruiter");
+  const { data: me } = useAuthMeQuery();
+
   const cycleTheme = () => {
     const order = ["light", "dark", "system"];
     setTheme(order[(order.indexOf(theme) + 1) % order.length]);
@@ -25,6 +29,15 @@ const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-4">
+          {user && showCompany && (
+            <div className="text-right leading-tight hidden sm:block">
+              <p className="text-sm font-semibold">{user.fullname}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {me?.company?.company_name ?? "N/A"}
+              </p>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={cycleTheme}

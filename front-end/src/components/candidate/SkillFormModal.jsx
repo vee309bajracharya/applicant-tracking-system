@@ -46,8 +46,7 @@ const SkillFormModal = ({ isOpen, onClose, alreadyAttachedIds = [] }) => {
 
           {!availableSkills.length && (
             <p className="text-xs text-gray-400">
-              No skills found to add. Skill taxonomy access is currently admin-only on the backend, so this list
-              may be empty for your role until that permission gap is fixed.
+              No skills found to add.
             </p>
           )}
 

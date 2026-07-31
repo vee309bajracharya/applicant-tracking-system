@@ -1,12 +1,7 @@
 import axiosClient from "../api/axiosClient";
 
-// NOTE: GET /skills is gated behind the "skills.manage" permission, which
-// only the admin role currently holds (see permissions.js ROLE_PERMISSIONS).
-// HR Managers (jobs.create) and Candidates (profile.manage) have no
-// backend-authorized way to browse the master skill taxonomy. This service
-// is wired up for when that permission gap is fixed; until then, the skill
-// picker will 403 for non-admin users. Flagged in Rules.md-style: not
-// silently patched over here.
+// GET /skills accepts skills.view OR skills.manage as HR now holds the job-form skill picker
+// and candidates hold skills.view too for their own skill picker for job
 const skillService = {
   list: (params) => axiosClient.get("/skills", { params }),
   store: (payload) => axiosClient.post("/skills", payload),
