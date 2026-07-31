@@ -10,6 +10,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import StatusTimeline from "../../components/applications/StatusTimeline";
 import SkillGapPanel from "../../components/applications/SkillGapPanel";
 import UpdateStatusModal from "../../components/applications/UpdateStatusModal";
+import InterviewsPanel from "../../components/interviews/InterviewsPanel";
 import { APPLICATION_STATUS_LABELS } from "../../constants/applicationStatus";
 
 const STATUS_CLASSES = {
@@ -143,6 +144,8 @@ const ApplicationDetailPage = () => {
               </dl>
             </div>
           )}
+
+          <InterviewsPanel application={application} />
 
           <button
             type="button"
