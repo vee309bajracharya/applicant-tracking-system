@@ -21,7 +21,7 @@ class InterviewResource extends JsonResource
             'application_id' => $this->application_id,
             'recruiter_id' => $this->recruiter_id,
             'recruiter' => UserResource::make($this->whenLoaded('recruiter')),
-            'interview_date' => optional($this->interview_date)->format('Y-m-d'),
+            'interview_date' => optional($this->interview_date)->format('Y-m-d\TH:i'),
             'interview_type' => $this->interview_type,
             'meeting_link' => $this->meeting_link,
             'status' => $this->status,

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Application;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreApplicationRequest extends FormRequest
 {
@@ -23,8 +24,19 @@ class StoreApplicationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'job_id' => ['required', 'integer', 'exists:job_postings,id'],
+            'job_id' => [
+                'required',
+                'integer',
+                Rule::exists('job_postings', 'id')->where('status', 'open'),
+            ],
             'resume_id' => ['required', 'integer', 'exists:resumes,id'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'job_id.exists' => 'This job is no longer accepting applications.',
         ];
     }
 }

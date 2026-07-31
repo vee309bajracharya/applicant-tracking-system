@@ -104,6 +104,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $recruiter->syncPermissions([
             'jobs.view',
             'applications.screen',
+            'applications.view',
             'interviews.manage',
             'candidate.notes.create',
             'candidates.view',
