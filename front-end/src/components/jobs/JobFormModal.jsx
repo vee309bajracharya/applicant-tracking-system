@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Plus, Trash2 } from "lucide-react";
@@ -10,12 +10,19 @@ import { useCreateJobMutation, useUpdateJobMutation } from "../../hooks/useJobs"
 import { useCompaniesQuery } from "../../hooks/useCompanies";
 import { useDepartmentsQuery } from "../../hooks/useDepartments";
 import { useSkillsQuery } from "../../hooks/useSkills";
+import { useAuth } from "../../contexts/AuthContext";
 import { EMPLOYMENT_TYPE_LABELS, EMPLOYMENT_TYPES } from "../../constants/employmentTypes";
+import SkillTaxonomyFormModal from "../admin/SkillTaxonomyFormModal";
 
 const JobFormModal = ({ isOpen, onClose, job = null }) => {
   const isEditMode = !!job;
   const createMutation = useCreateJobMutation();
   const updateMutation = useUpdateJobMutation();
+  const { hasPermission } = useAuth();
+  const [isQuickAddSkillOpen, setIsQuickAddSkillOpen] = useState(false);
+
+  // GET /companies now accepts companies.view OR companies.manage, and
+  // GET /skills accepts skills.view OR skills.manage
   const { data: companiesData } = useCompaniesQuery({ page: 1 }, { enabled: isOpen });
   const { data: skillsData } = useSkillsQuery({ page: 1 }, { enabled: isOpen });
 
@@ -245,19 +252,31 @@ const JobFormModal = ({ isOpen, onClose, job = null }) => {
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Required / preferred skills</span>
-              <button
-                type="button"
-                onClick={() => append({ skill_id: skills[0]?.skill_id || "", importance: "required" })}
-                disabled={!skills.length}
-                className="text-xs text-primary-blue hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <Plus size={12} /> Add skill
-              </button>
+              <div className="flex items-center gap-3">
+                {hasPermission("skills.create") && (
+                  <button
+                    type="button"
+                    onClick={() => setIsQuickAddSkillOpen(true)}
+                    className="text-xs text-primary-blue hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus size={12} /> New Skill
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => append({ skill_id: skills[0]?.skill_id || "", importance: "required" })}
+                  disabled={!skills.length}
+                  className="text-xs text-primary-blue hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Plus size={12} /> Add Skill
+                </button>
+              </div>
             </div>
 
             {!skills.length && (
               <p className="text-xs text-gray-400 mb-2">
-                No skills available
+                No skills in the taxonomy yet.{" "}
+                {hasPermission("skills.create") ? 'Use "New skill" above to add one.' : "Ask an admin to add some."}
               </p>
             )}
 
@@ -298,6 +317,10 @@ const JobFormModal = ({ isOpen, onClose, job = null }) => {
           </button>
         </fieldset>
       </form>
+
+      {hasPermission("skills.create") && (
+        <SkillTaxonomyFormModal isOpen={isQuickAddSkillOpen} onClose={() => setIsQuickAddSkillOpen(false)} />
+      )}
     </Modal>
   );
 };
