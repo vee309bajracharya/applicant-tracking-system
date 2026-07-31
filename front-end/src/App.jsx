@@ -28,6 +28,7 @@ const JobsListPage = lazy(() => import("./pages/jobs/JobsListPage"));
 const JobDetailPage = lazy(() => import("./pages/jobs/JobDetailPage"));
 const ArchivedJobsPage = lazy(() => import("./pages/jobs/ArchivedJobsPage"));
 const SkillsAdminPage = lazy(() => import("./pages/admin/SkillsAdminPage"));
+const FaqAdminPage = lazy(() => import("./pages/admin/FaqAdminPage"));
 const CandidateProfilePage = lazy(() => import("./pages/candidate/CandidateProfilePage"));
 const MyApplicationsPage = lazy(() => import("./pages/candidate/MyApplicationsPage"));
 const ApplicationsQueuePage = lazy(() => import("./pages/applications/ApplicationsQueuePage"));
@@ -88,6 +89,7 @@ const router = createBrowserRouter([
             children: [
               { path: "/admin/users", element: withSuspense(<UserManagementPage />) },
               { path: "/admin/skills", element: withSuspense(<SkillsAdminPage />) },
+              { path: "/admin/faqs", element: withSuspense(<FaqAdminPage />) },
               { path: "/companies", element: withSuspense(<CompaniesListPage />) },
               { path: "/companies/:companyId", element: withSuspense(<CompanyDetailPage />) },
             ],

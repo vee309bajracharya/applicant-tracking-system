@@ -3,6 +3,7 @@ import Navbar from "../components/common/Navbar";
 import SideNav from "../components/layout/SideNav";
 import MobileBottomNav from "../components/layout/MobileBottomNav";
 import CustomLoader from "../components/common/CustomLoader";
+import ChatbotWidget from "../components/chatbot/ChatbotWidget";
 import { useCurrentUserQuery } from "../hooks/useCurrentUserQuery";
 
 const MainLayout = () => {
@@ -20,6 +21,7 @@ const MainLayout = () => {
         </main>
       </div>
       <MobileBottomNav />
+      <ChatbotWidget />
     </section>
   );
 };
