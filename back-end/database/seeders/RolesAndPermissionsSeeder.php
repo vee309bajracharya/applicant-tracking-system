@@ -30,6 +30,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'companies.manage',
             'departments.manage',
 
+            'companies.view', // for HRs, to dropdown company names on Job creation
+
             // Read access (admin + HR manager)
             'departments.view',
 
@@ -56,6 +58,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'applications.create', // self-submit application
 
             'skills.manage', //admin master skill taxonomy CRUD
+
+            // for HRs, to add job related skills
+            'skills.view',
+            'skills.create',
+
             'candidates.view', // HR + recruiter browse candidate profiles
             'resumes.view', // HR + recruiter gate resume download
 
@@ -87,6 +94,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'departments.view',
             'candidates.view',
             'resumes.view',
+            'companies.view',
+            'skills.view',
+            'skills.create',
         ]);
 
         // recruiter
@@ -108,6 +118,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'applications.self.view',
             'applications.create',
             'jobs.view',
+            'skills.view',
         ]);
 
         $this->command->info('Roles and Permissions seeded');

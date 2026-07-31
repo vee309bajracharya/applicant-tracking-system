@@ -134,6 +134,16 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user()->load('socialAccounts');
+
+        $company = null;
+        if ($user->hasAnyRole(['hr_manager', 'recruiter'])) {
+            $userCompany = $user->companies()->first();
+            $company = $userCompany ? [
+                'id' => $userCompany->id,
+                'company_name' => $userCompany->company_name,
+            ] : null;
+        }
+
         return response()->json([
             'success' => true,
             'data' => [

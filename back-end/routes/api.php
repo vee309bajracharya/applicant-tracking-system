@@ -69,14 +69,19 @@ Route::prefix('v1')->group(function () {
         });
 
         // Phase 2: Organization module (companies and departments)
-        Route::prefix('companies')->name('companies.')->middleware('permission:companies.manage')->group(function () {
-            Route::get('/', [CompanyController::class, 'index'])->name('index');
-            Route::get('/{company}', [CompanyController::class, 'show'])->name('show');
-            Route::post('/', [CompanyController::class, 'store'])->name('store');
-            Route::patch('/{company}', [CompanyController::class, 'update'])->name('update');
-            Route::delete('/{company}', [CompanyController::class, 'destroy'])->name('destroy');
-            Route::post('/{company}/users', [CompanyUserController::class, 'store'])->name('users.store');
-            Route::delete('/{company}/users/{user}', [CompanyUserController::class, 'destroy'])->name('users.destroy');
+        Route::prefix('companies')->name('companies.')->group(function () {
+            Route::middleware('permission:companies.view|companies.manage')->group(function () {
+                Route::get('/', [CompanyController::class, 'index'])->name('index');
+                Route::get('/{company}', [CompanyController::class, 'show'])->name('show');
+            });
+
+            Route::middleware('permission:companies.manage')->group(function () {
+                Route::post('/', [CompanyController::class, 'store'])->name('store');
+                Route::patch('/{company}', [CompanyController::class, 'update'])->name('update');
+                Route::delete('/{company}', [CompanyController::class, 'destroy'])->name('destroy');
+                Route::post('/{company}/users', [CompanyUserController::class, 'store'])->name('users.store');
+                Route::delete('/{company}/users/{user}', [CompanyUserController::class, 'destroy'])->name('users.destroy');
+            });
 
             // read —> admin + hr_manager
             Route::middleware('permission:departments.view')->group(function () {
@@ -121,12 +126,12 @@ Route::prefix('v1')->group(function () {
         // HR + recruiter browse candidate profiles
         Route::get('/candidates', [CandidateProfileController::class, 'index'])->middleware('permission:candidates.view')->name('candidates.index');
 
-        // admin master skill taxonomy CRUD
-        Route::prefix('skills')->name('skills.')->middleware('permission:skills.manage')->group(function () {
-            Route::get('/', [SkillController::class, 'index'])->name('index');
-            Route::post('/', [SkillController::class, 'store'])->name('store');
-            Route::patch('/{skill}', [SkillController::class, 'update'])->name('update');
-            Route::delete('/{skill}', [SkillController::class, 'destroy'])->name('destroy');
+        // admin master skill taxonomy CRUD and split for HR
+        Route::prefix('skills')->name('skills.')->group(function () {
+            Route::get('/', [SkillController::class, 'index'])->middleware('permission:skills.view|skills.manage')->name('index');
+            Route::post('/', [SkillController::class, 'store'])->middleware('permission:skills.create|skills.manage')->name('store');
+            Route::patch('/{skill}', [SkillController::class, 'update'])->middleware('permission:skills.manage')->name('update');
+            Route::delete('/{skill}', [SkillController::class, 'destroy'])->middleware('permission:skills.manage')->name('destroy');
         });
 
         // Phase 4 : Job & Application Module
@@ -138,7 +143,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/trashed', [JobController::class, 'trashed'])->middleware('permission:jobs.edit')->name('trashed');
                 Route::patch('/{job}/restore', [JobController::class, 'restore'])->middleware('permission:jobs.edit')->name('restore');
                 Route::get('/{job}', [JobController::class, 'show'])->name('show');
-                
+
                 // Phase 5(portion) : candidates for a job, ranked desc by computed final_score
                 Route::get('/{job}/applications/ranked', [MatchScoreController::class, 'rankedForJob'])->middleware('permission:applications.view')->name('applications.ranked');
             });
