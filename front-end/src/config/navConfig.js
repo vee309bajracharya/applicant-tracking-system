@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Building2, Briefcase, UserCircle, ClipboardList, ListChecks, Tags } from "lucide-react";
+import { LayoutDashboard, Users, Building2, Briefcase, UserCircle, ClipboardList, ListChecks, Tags, HelpCircle } from "lucide-react";
 import { ROLES } from "../constants/roles";
 
 export const NAV_ITEMS = [
@@ -15,4 +15,5 @@ export const NAV_ITEMS = [
     roles: [ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.RECRUITER],
   },
   { label: "Add Job Skills", to: "/admin/skills", icon: Tags, roles: [ROLES.ADMIN] },
+  { label: "FAQs", to: "/admin/faqs", icon: HelpCircle, roles: [ROLES.ADMIN] },
 ];
