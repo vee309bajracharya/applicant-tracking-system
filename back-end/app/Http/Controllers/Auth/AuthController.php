@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Requests\Auth\UpdateMeRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\OtpVerifyRequest;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -156,7 +158,50 @@ class AuthController extends Controller
                 'role' => $user->getRoleNames()->first(),
                 'email_verified' => $user->isEmailVerified(),
                 'last_login_at' => $user->last_login_at,
+                'company' => $company,
             ]
+        ], 200);
+    }
+
+    // update authenticated user profile
+    public function updateMe(UpdateMeRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $data = $request->safe()->only(['fullname', 'email', 'phone']);
+
+        if ($request->filled('password')) {
+            if (!Hash::check($request->input('current_password'), $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The provided data failed validation.',
+                    'errors' => ['current_password' => ['Current password is incorrect.']],
+                ], 422);
+            }
+            $data['password'] = Hash::make($request->input('password'));
+        }
+
+        $oldPhoto = $user->profile_photo;
+        if ($request->hasFile('profile_photo')) {
+            $data['profile_photo'] = $request->file('profile_photo')->store('avatars', 'public');
+            // TODO: pipe through Intervention Image resize before store
+        }
+
+        $user->update($data);
+
+        if ($request->hasFile('profile_photo') && $oldPhoto) {
+            Storage::disk('public')->delete($oldPhoto);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Account updated successfully',
+            'data' => [
+                'id' => $user->id,
+                'fullname' => $user->fullname,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'profile_photo' => $user->fresh()->profile_photo,
+            ],
         ], 200);
     }
 

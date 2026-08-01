@@ -21,6 +21,7 @@ const ResetPasswordPage = lazy(() => import("./pages/auth/ResetPasswordPage"));
 const OAuthCallbackPage = lazy(() => import("./pages/auth/OAuthCallbackPage"));
 const SetPasswordPage = lazy(() => import("./pages/auth/SetPasswordPage"));
 const UserManagementPage = lazy(() => import("./pages/admin/UserManagementPage"));
+const MyAccountPage = lazy(() => import("./pages/account/MyAccountPage"));
 const CompaniesListPage = lazy(() => import("./pages/companies/CompaniesListPage"));
 const CompanyDetailPage = lazy(() => import("./pages/companies/CompanyDetailPage"));
 
@@ -81,6 +82,7 @@ const router = createBrowserRouter([
             children: [
               { path: "/applications", element: withSuspense(<ApplicationsQueuePage />) },
               { path: "/applications/:applicationId", element: withSuspense(<ApplicationDetailPage />) },
+              { path: "/account", element: withSuspense(<MyAccountPage />) },
             ],
           },
 
