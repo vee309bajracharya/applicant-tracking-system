@@ -6,6 +6,17 @@ const authService = {
   logout: () => axiosClient.post("/auth/logout"),
   me: () => axiosClient.get("/auth/me"),
 
+  updateMe: (payload) => {
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== "") formData.append(key, value);
+    });
+    formData.append("_method", "PATCH");
+    return axiosClient.post("/auth/me", formData, {
+      headers: { "Content-Type": undefined, Accept: "application/json" },
+    });
+  },
+
   verifyEmail: (payload) => axiosClient.post("/auth/verify-email", payload),
   resendVerificationOtp: (payload) => axiosClient.post("/auth/resend-verification-otp", payload),
 
