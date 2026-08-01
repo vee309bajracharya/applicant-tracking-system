@@ -15,6 +15,7 @@ use App\Http\Controllers\Chatbot\ChatbotController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Company\CompanyUserController;
 use App\Http\Controllers\Company\DepartmentController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Faq\FaqController;
 use App\Http\Controllers\Interview\InterviewController;
 use App\Http\Controllers\Interview\InterviewFeedbackController;
@@ -56,7 +57,11 @@ Route::prefix('v1')->group(function () {
         Route::prefix('auth')->name('auth.')->group(function () {
             Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
             Route::get('/me', [AuthController::class, 'me'])->name('me');
+            Route::patch('/me', [AuthController::class, 'updateMe'])->name('me.update');
         });
+
+        // dashboard
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // user mgmt by admin
         Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
