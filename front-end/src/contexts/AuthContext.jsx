@@ -38,6 +38,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   }, [queryClient]);
 
+  // after edit, sync the change into the persisted user without forcing a full re-login.
+  const updateStoredUser = useCallback((partialUser) => {
+    setUser((prev) => (prev ? { ...prev, ...partialUser } : prev));
+  }, []);
+
   useEffect(() => {
     if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
   }, [user]);
@@ -87,8 +92,9 @@ export const AuthProvider = ({ children }) => {
       setUser,
       persistSession,
       clearSession,
+      updateStoredUser,
     }),
-    [user, token, isBootstrapping, login, logout, hasRole, hasPermission, persistSession, clearSession]
+    [user, token, isBootstrapping, login, logout, hasRole, hasPermission, persistSession, clearSession, updateStoredUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
