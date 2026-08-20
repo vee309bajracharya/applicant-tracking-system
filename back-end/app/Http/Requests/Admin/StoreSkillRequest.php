@@ -13,7 +13,7 @@ class StoreSkillRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('skills.manage');
+        return $this->user()->can('skills.manage') || $this->user()->can('skills.create');
     }
 
     /**
