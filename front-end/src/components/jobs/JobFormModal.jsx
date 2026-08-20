@@ -20,11 +20,9 @@ const JobFormModal = ({ isOpen, onClose, job = null }) => {
   const updateMutation = useUpdateJobMutation();
   const { hasPermission } = useAuth();
   const [isQuickAddSkillOpen, setIsQuickAddSkillOpen] = useState(false);
-
-  // GET /companies now accepts companies.view OR companies.manage, and
-  // GET /skills accepts skills.view OR skills.manage
+  
   const { data: companiesData } = useCompaniesQuery({ page: 1 }, { enabled: isOpen });
-  const { data: skillsData } = useSkillsQuery({ page: 1 }, { enabled: isOpen });
+  const { data: skillsData } = useSkillsQuery({ page: 1, per_page: 100 }, { enabled: isOpen });
 
   const {
     register,

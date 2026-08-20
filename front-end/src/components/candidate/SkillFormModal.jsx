@@ -10,7 +10,8 @@ import { useAttachSkillMutation } from "../../hooks/useCandidateSkills";
 import { PROFICIENCY_LEVELS } from "../../constants/jobStatus";
 
 const SkillFormModal = ({ isOpen, onClose, alreadyAttachedIds = [] }) => {
-  const { data: skillsData } = useSkillsQuery({ page: 1 }, { enabled: isOpen });
+  // per_page:100 and page:1 with the backend's default per_page:10
+  const { data: skillsData } = useSkillsQuery({ page: 1, per_page: 100 }, { enabled: isOpen });
   const attachMutation = useAttachSkillMutation();
 
   const {
