@@ -22,13 +22,15 @@ class UserResource extends JsonResource
             'profile_photo' => $this->profile_photo,
             'status' => $this->status,
             'role' => $this->roles->first()?->name,
-            'designation' => $this->whenPivotLoaded(
+            'designation' => $this->whenPivotLoadedAs(
+                'company_user',
                 'company_users',
                 fn() => $this->company_user->designation
             ),
-            'joined_at' => $this->whenPivotLoaded(
+            'joined_at' => $this->whenPivotLoadedAs(
+                'company_user',
                 'company_users',
-                fn() => optional($this->company_user->joined_at)->format('Y-m-d')
+                fn() => $this->company_user->joined_at
             ),
         ];
     }
