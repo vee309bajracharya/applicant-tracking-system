@@ -37,7 +37,7 @@ const CompanyCard = ({ company }) => {
           <LayoutGrid size={12} aria-hidden="true" /> {deptCount} departments
         </span>
         <span className="flex items-center gap-1">
-          <Users size={12} aria-hidden="true" /> {staffCount} staff
+          <Users size={12} aria-hidden="true" /> {staffCount} staffs
         </span>
       </div>
     </Link>

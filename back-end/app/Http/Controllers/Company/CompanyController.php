@@ -17,7 +17,7 @@ class CompanyController extends Controller
     public function index(Request $request)
     {
         $companies = Company::query()
-            ->withCount('departments')
+            ->withCount(['departments','users'])
             ->latest()
             ->paginate(10);
 
