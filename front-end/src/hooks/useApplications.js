@@ -33,6 +33,7 @@ export const useUpdateApplicationStatusMutation = () => {
       toast.success(response.data.message ?? "Status updated");
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       queryClient.invalidateQueries({ queryKey: ["applications", applicationId] });
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
     },
     onError: (error) => toast.error(extractErrorMessage(error)),
   });
