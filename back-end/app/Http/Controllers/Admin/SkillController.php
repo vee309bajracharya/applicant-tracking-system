@@ -13,13 +13,15 @@ class SkillController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Skill::query();
+        $query = Skill::query()->orderBy('skill_name', 'asc');
 
         if ($search = $request->query('search')) {
             $query->where('skill_name', 'like', "%{$search}%");
         }
 
-        return SkillResource::collection($query->paginate(10));
+        $perPage = min((int) $request->query('per_page', 10), 100);
+
+        return SkillResource::collection($query->paginate($perPage));
     }
 
     public function store(StoreSkillRequest $request)
