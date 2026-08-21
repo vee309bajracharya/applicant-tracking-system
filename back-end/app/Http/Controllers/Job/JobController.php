@@ -29,6 +29,11 @@ class JobController extends Controller
             $query->where('status', 'open');
         }
 
+        // HR and Recruiters are staff of exactly one company and must never see another company's job postings
+        if ($request->user()->isScopedToCompany()) {
+            $query->where('company_id', $request->user()->assignedCompanyId());
+        }
+
         if ($status = $request->query('status'))
             $query->where('status', $status);
 
@@ -38,8 +43,11 @@ class JobController extends Controller
         return JobResource::collection($query->latest()->paginate(10));
     }
 
-    public function show(Job $job)
+    public function show(Request $request, Job $job)
     {
+        if ($request->user()->isScopedToCompany() && $job->company_id !== $request->user()->assignedCompanyId()) {
+            abort(403, 'You do not have access to this job.');
+        }
         return JobResource::make($job->load($this->jobRelations()));
     }
 
