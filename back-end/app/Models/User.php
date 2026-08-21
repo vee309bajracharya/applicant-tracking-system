@@ -92,6 +92,18 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    // HR and Recruiters are scoped to the single company
+    public function assignedCompanyId(): ?int
+    {
+        return $this->companies()->value('company_id');
+    }
+
+    // Admin sees everything, HR and Recruiters are scoped to their company
+    public function isScopedToCompany(): bool
+    {
+        return $this->hasAnyRole(['hr_manager', 'recruiter']);
+    }
+
     public function createdJobs(): HasMany
     {
         return $this->hasMany(Job::class, 'created_by');

@@ -9,10 +9,12 @@ use App\Http\Resources\InterviewResource;
 use App\Models\Application;
 use App\Models\Interview;
 use App\Services\NotificationService;
+use App\Traits\EnforcesCompanyScope;
 use Illuminate\Http\Request;
 
 class InterviewController extends Controller
 {
+    use EnforcesCompanyScope;
     public function __construct(protected NotificationService $notifier)
     {
     }
@@ -21,8 +23,10 @@ class InterviewController extends Controller
         return ['recruiter', 'feedback.reviewer'];
     }
 
-    public function index(Application $application)
+    public function index(Request $request, Application $application)
     {
+        $this->assertApplicationCompanyAccess($request, $application);
+
         $interviews = $application->interviews()->with($this->relations())->latest('interview_date')->get();
 
         return InterviewResource::collection($interviews);
@@ -31,6 +35,8 @@ class InterviewController extends Controller
     public function store(StoreInterviewRequest $request)
     {
         $application = Application::with(['candidateProfile', 'job'])->findOrFail($request->validated('application_id'));
+
+        $this->assertApplicationCompanyAccess($request, $application);
 
         // the scheduling applies only if the pipeline has reached to interview stage
         abort_unless($application->status === 'interview', 422, "Application must be in the 'interview' stage before scheduling. Current Status : '{$application->status}'");
@@ -48,6 +54,8 @@ class InterviewController extends Controller
 
     public function update(UpdateInterviewRequest $request, Interview $interview)
     {
+        $this->assertApplicationCompanyAccess($request, $interview->application);
+
         $interview->update($request->validated());
 
         return InterviewResource::make($interview->fresh()->load($this->relations()));
@@ -56,6 +64,8 @@ class InterviewController extends Controller
     public function cancel(Request $request, Interview $interview)
     {
         abort_unless($request->user()->can('interviews.manage'), 403);
+
+        $this->assertApplicationCompanyAccess($request, $interview->application);
 
         $interview->update(['status' => 'cancelled']);
 

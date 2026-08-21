@@ -8,13 +8,14 @@ use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
 use App\Services\ApplicationPipelineService;
 use App\Services\MatchScoreService;
+use App\Traits\EnforcesCompanyScope;
 use App\Traits\LoadsApplicationRelations;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 
 class ApplicationController extends Controller
 {
-    use LoadsApplicationRelations;
+    use LoadsApplicationRelations, EnforcesCompanyScope;
 
     public function __construct(protected ApplicationPipelineService $pipeline, protected MatchScoreService $matcher)
     {
@@ -23,6 +24,11 @@ class ApplicationController extends Controller
     public function index(Request $request)
     {
         $query = Application::with($this->applicationRelations());
+
+        if ($request->user()->isScopedToCompany()) {
+            $companyId = $request->user()->assignedCompanyId();
+            $query->whereHas('job', fn($query) => $query->where('company_id', $companyId));
+        }
 
         if ($jobId = $request->query('job_id'))
             $query->where('job_id', $jobId);
@@ -41,14 +47,16 @@ class ApplicationController extends Controller
         return ApplicationResource::collection($query->latest('applied_at')->paginate(10));
     }
 
-    public function show(Application $application)
+    public function show(Request $request, Application $application)
     {
+        $this->assertApplicationCompanyAccess($request, $application);
         return ApplicationResource::make($application->load($this->applicationRelations()));
     }
 
     // status transitions gated per-status below — request only checks base applications.view
     public function updateStatus(UpdateApplicationStatusRequest $request, Application $application)
     {
+        $this->assertApplicationCompanyAccess($request, $application);
         $status = $request->validated('status');
 
         $finalOutcomes = ['selected', 'rejected', 'hired'];

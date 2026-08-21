@@ -8,12 +8,16 @@ use App\Http\Requests\Interview\UpdateInterviewFeedbackRequest;
 use App\Http\Resources\InterviewFeedbackResource;
 use App\Models\Interview;
 use App\Models\InterviewFeedback;
+use App\Traits\EnforcesCompanyScope;
 use Illuminate\Http\Request;
 
 class InterviewFeedbackController extends Controller
 {
+    use EnforcesCompanyScope;
     public function store(StoreInterviewFeedbackRequest $request, Interview $interview)
     {
+        $this->assertApplicationCompanyAccess($request, $interview->application);
+
         $feedback = InterviewFeedback::create([
             'interview_id' => $interview->id,
             'reviewer_id' => $request->user()->id,
@@ -26,6 +30,8 @@ class InterviewFeedbackController extends Controller
 
     public function update(UpdateInterviewFeedbackRequest $request, InterviewFeedback $feedback)
     {
+        $this->assertApplicationCompanyAccess($request, $feedback->interview->application);
+
         $feedback->update($request->validated());
 
         return InterviewFeedbackResource::make($feedback->fresh()->load('reviewer'));
@@ -34,6 +40,8 @@ class InterviewFeedbackController extends Controller
     public function destroy(Request $request, InterviewFeedback $feedback)
     {
         abort_unless($feedback->reviewer_id === $request->user()->id || $request->user()->can('interviews.manage'), 403);
+
+        $this->assertApplicationCompanyAccess($request, $feedback->interview->application);
 
         $feedback->delete();
 
