@@ -9,6 +9,7 @@ import {
   Tags,
   HelpCircle,
   Settings,
+  FileDown,
 } from "lucide-react";
 import { ROLES } from "../constants/roles";
 
@@ -39,6 +40,12 @@ export const NAV_ITEMS = [
     to: "/applications",
     icon: ListChecks,
     roles: [ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.RECRUITER],
+  },
+  {
+    label: "Reports",
+    to: "/reports",
+    icon: FileDown,
+    roles: [ROLES.ADMIN, ROLES.HR_MANAGER],
   },
   {
     label: "Add Job Skills",

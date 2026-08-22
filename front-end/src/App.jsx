@@ -34,6 +34,7 @@ const CandidateProfilePage = lazy(() => import("./pages/candidate/CandidateProfi
 const MyApplicationsPage = lazy(() => import("./pages/candidate/MyApplicationsPage"));
 const ApplicationsQueuePage = lazy(() => import("./pages/applications/ApplicationsQueuePage"));
 const ApplicationDetailPage = lazy(() => import("./pages/applications/ApplicationDetailPage"));
+const ReportsPage = lazy(() => import("./pages/reports/ReportsPage"));
 
 const withSuspense = (el) => <Suspense fallback={<CustomLoader />}>{el}</Suspense>;
 
@@ -84,6 +85,11 @@ const router = createBrowserRouter([
               { path: "/applications/:applicationId", element: withSuspense(<ApplicationDetailPage />) },
               { path: "/account", element: withSuspense(<MyAccountPage />) },
             ],
+          },
+
+          {
+            element: <RoleProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.HR_MANAGER]} />,
+            children: [{ path: "/reports", element: withSuspense(<ReportsPage />) }],
           },
 
           {
