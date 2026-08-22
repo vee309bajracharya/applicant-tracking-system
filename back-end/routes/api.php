@@ -21,6 +21,7 @@ use App\Http\Controllers\Interview\InterviewController;
 use App\Http\Controllers\Interview\InterviewFeedbackController;
 use App\Http\Controllers\Job\JobController;
 use App\Http\Controllers\Notification\NotificationController;
+use App\Http\Controllers\Report\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -221,6 +222,13 @@ Route::prefix('v1')->group(function () {
             Route::get('/{conversation}', [ChatbotController::class, 'show'])->name('show');
             Route::post('/', [ChatbotController::class, 'store'])->name('store');
             Route::post('/{conversation}/messages', [ChatbotController::class, 'sendMessage'])->name('messages.store');
+        });
+
+        // Phase 7: Export Reports
+        Route::prefix('reports')->name('reports.')->middleware('permission:reports.export')->group(function () {
+            Route::get('/hiring', [ReportController::class, 'hiring'])->name('hiring');
+            Route::get('/candidates', [ReportController::class, 'candidates'])->name('candidates');
+            Route::get('/interviews', [ReportController::class, 'interviews'])->name('interviews');
         });
     });
 

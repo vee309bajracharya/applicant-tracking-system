@@ -43,7 +43,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // hiring authority (HR only)
             'hiring.manage', //select/reject/issue offer
-            'reports.export', //pdf/excel exports
+            'reports.export', //only pdf export
 
             // app pipeline (recruiter)
             'applications.view',
