@@ -10,7 +10,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import JobFormModal from "../../components/jobs/JobFormModal";
 import ApplyJobModal from "../../components/candidate/ApplyJobModal";
 import { EMPLOYMENT_TYPE_LABELS } from "../../constants/employmentTypes";
-import { JOB_STATUS_LABELS, JOB_STATUS_BADGE_CLASSES } from "../../constants/jobStatus";
+import { JOB_DISPLAY_STATUS_LABELS, JOB_DISPLAY_STATUS_BADGE_CLASSES, getJobDisplayStatus } from "../../constants/jobStatus";
 
 const JobDetailPage = () => {
   const { jobId } = useParams();
@@ -48,7 +48,11 @@ const JobDetailPage = () => {
           <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl font-bold">{job.title}</h1>
             {!isCandidate && (
-              <StatusBadge status={job.status} labels={JOB_STATUS_LABELS} classes={JOB_STATUS_BADGE_CLASSES} />
+              <StatusBadge
+                status={getJobDisplayStatus(job)}
+                labels={JOB_DISPLAY_STATUS_LABELS}
+                classes={JOB_DISPLAY_STATUS_BADGE_CLASSES}
+              />
             )}
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">

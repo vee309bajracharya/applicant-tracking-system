@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { MapPin, Briefcase, Building2 } from "lucide-react";
 import StatusBadge from "../ui/StatusBadge";
 import { EMPLOYMENT_TYPE_LABELS } from "../../constants/employmentTypes";
-import { JOB_STATUS_LABELS, JOB_STATUS_BADGE_CLASSES } from "../../constants/jobStatus";
+import { JOB_DISPLAY_STATUS_LABELS, JOB_DISPLAY_STATUS_BADGE_CLASSES, getJobDisplayStatus } from "../../constants/jobStatus";
 
 const JobCard = ({ job, showStatus = false }) => (
   <Link
@@ -12,7 +12,11 @@ const JobCard = ({ job, showStatus = false }) => (
     <div className="flex items-start justify-between gap-2 mb-2">
       <h3 className="font-semibold text-lg line-clamp-1">{job.title}</h3>
       {showStatus && (
-        <StatusBadge status={job.status} labels={JOB_STATUS_LABELS} classes={JOB_STATUS_BADGE_CLASSES} />
+        <StatusBadge
+          status={getJobDisplayStatus(job)}
+          labels={JOB_DISPLAY_STATUS_LABELS}
+          classes={JOB_DISPLAY_STATUS_BADGE_CLASSES}
+        />
       )}
     </div>
 
