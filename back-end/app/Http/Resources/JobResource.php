@@ -29,6 +29,7 @@ class JobResource extends JsonResource
             'description' => $this->description,
             'status' => $this->status,
             'deadline' => optional($this->deadline)->format('Y-m-d'),
+            'is_expiring_soon' => $this->resource->isExpiringSoon(),
 
             'company_id' => $this->company_id,
             'company' => CompanyResource::make($this->whenLoaded('company')),

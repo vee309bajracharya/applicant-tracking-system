@@ -81,4 +81,12 @@ class Job extends Model
         return $this->hasMany(Application::class, 'job_id');
     }
 
+    public function isExpiringSoon(): bool
+    {
+        if ($this->status !== 'open' || !$this->deadline)
+            return false;
+        $daysUntilDeadline = now()->diffInDays($this->deadline, false);
+        return $daysUntilDeadline >= 0 && $daysUntilDeadline <= 5;
+    }
+
 }
