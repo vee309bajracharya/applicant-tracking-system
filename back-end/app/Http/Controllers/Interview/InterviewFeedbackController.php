@@ -18,12 +18,22 @@ class InterviewFeedbackController extends Controller
     {
         $this->assertApplicationCompanyAccess($request, $interview->application);
 
+        abort_if($interview->status === 'cancelled', 422, 'Cannot log feedback for a cancelled interview');
+        abort_if(
+            $interview->interview_date->isFuture(),
+            422,
+            'Cannot log feedback for an interview that has not yet occurred'
+        );
+
         $feedback = InterviewFeedback::create([
             'interview_id' => $interview->id,
             'reviewer_id' => $request->user()->id,
             'rating_score' => $request->validated('rating_score'),
             'notes' => $request->validated('notes'),
         ]);
+
+        if ($interview->status === 'scheduled')
+            $interview->update(['status' => 'completed']);
 
         return InterviewFeedbackResource::make($feedback->load('reviewer'))->response()->setStatusCode(201);
     }

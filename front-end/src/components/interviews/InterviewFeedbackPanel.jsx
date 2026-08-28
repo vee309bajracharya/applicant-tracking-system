@@ -37,9 +37,15 @@ const InterviewFeedbackPanel = ({ interview, applicationId }) => {
   });
 
   const feedbackEntries = interview.feedback ?? [];
+  // the button doesn't even appear for an interview that hasn't happened yet or was cancelled.
+  const interviewHasPassed = interview.interview_date ? new Date(interview.interview_date) <= new Date() : false;
+  const interviewIsCancelled = interview.status === "cancelled";
   // one feedback entry per interview is enough.
   const canAddFeedback =
-    (hasPermission("candidate.notes.create") || hasPermission("interviews.manage")) && feedbackEntries.length === 0;
+    (hasPermission("candidate.notes.create") || hasPermission("interviews.manage")) &&
+    feedbackEntries.length === 0 &&
+    interviewHasPassed &&
+    !interviewIsCancelled;
 
   const openCreate = () => {
     setEditingFeedback(null);
@@ -79,7 +85,13 @@ const InterviewFeedbackPanel = ({ interview, applicationId }) => {
       </div>
 
       {feedbackEntries.length === 0 && !isFormOpen && (
-        <p className="text-xs text-gray-400">No feedback logged yet.</p>
+        <p className="text-xs text-gray-400">
+          {interviewIsCancelled
+            ? "This interview was cancelled — no feedback to log."
+            : !interviewHasPassed
+              ? "Feedback can be logged once this interview has taken place."
+              : "No feedback logged yet."}
+        </p>
       )}
 
       <ul className="flex flex-col gap-2">
