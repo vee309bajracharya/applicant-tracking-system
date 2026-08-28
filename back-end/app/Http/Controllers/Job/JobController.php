@@ -8,10 +8,16 @@ use App\Http\Requests\Job\StoreJobRequest;
 use App\Http\Requests\Job\UpdateJobRequest;
 use App\Http\Resources\JobResource;
 use App\Models\Job;
+use App\Services\JobLifecycleService;
 use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
+    public function __construct(protected JobLifecycleService $lifecycle)
+    {
+
+    }
+
     protected function jobRelations(): array
     {
         return [
@@ -23,6 +29,9 @@ class JobController extends Controller
     }
     public function index(Request $request)
     {
+
+        $this->lifecycle->closeExpiredJobs(); // a job whose deadline has passed must not keep showing open
+
         $query = Job::with($this->jobRelations())->withCount('applications');
 
         if ($request->user()->hasRole('candidate')) {
@@ -47,6 +56,10 @@ class JobController extends Controller
     {
         if ($request->user()->isScopedToCompany() && $job->company_id !== $request->user()->assignedCompanyId()) {
             abort(403, 'You do not have access to this job.');
+        }
+
+        if ($job->status === 'open' && $job->deadline && $job->deadline->isPast()) {
+            $job->update(['status' => 'closed']);
         }
         return JobResource::make($job->load($this->jobRelations()));
     }
