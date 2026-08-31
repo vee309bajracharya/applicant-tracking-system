@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import GoogleIcon from "../../assets/svg/google.svg";
 
 const GoogleOAuthButton = ({text="Continue with Google"}) => {
