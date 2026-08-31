@@ -3,12 +3,12 @@ name: Backend CI
 on:
   push:
     paths:
-      - 'back-end/**'
-      - '.github/workflows/backend.yml'
+      - "back-end/**"
+      - ".github/workflows/backend.yml"
   pull_request:
     paths:
-      - 'back-end/**'
-      - '.github/workflows/backend.yml'
+      - "back-end/**"
+      - ".github/workflows/backend.yml"
 
 jobs:
   test:
@@ -19,7 +19,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: smarthire_ats
+          MYSQL_DATABASE: smarthire_ats_testing
         ports:
           - 3306:3306
         options: >-
@@ -37,7 +37,7 @@ jobs:
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: mbstring, pdo, pdo_mysql, dom, curl, libxml, zip
           coverage: none
 
@@ -51,14 +51,16 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Copy .env
-        run: cp .env.example .env
-
-      - name: Set test DB credentials
+      - name: Copy .env files
         run: |
-          sed -i 's/DB_DATABASE=ats_db/DB_DATABASE=smarthire_ats/' .env
-          sed -i 's/DB_USERNAME=root/DB_USERNAME=root/' .env
-          sed -i 's/DB_PASSWORD=/DB_PASSWORD=root/' .env
+          cp .env.example .env
+          cp .env.example .env.testing
+
+      - name: Configure CI test database
+        run: |
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=smarthire_ats_testing/' .env.testing
+          sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env.testing
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env.testing
 
       - name: Generate app key
         run: php artisan key:generate
@@ -69,10 +71,10 @@ jobs:
           php artisan route:clear
 
       - name: Run migrations
-        run: php artisan migrate --force
+        run: php artisan migrate --env=testing --force
 
       - name: Seed roles & permissions
-        run: php artisan db:seed --class=RolesAndPermissionsSeeder --force
+        run: php artisan db:seed --class=RolesAndPermissionsSeeder --env=testing --force
 
       - name: Run Laravel Pint (code style)
         run: vendor/bin/pint
