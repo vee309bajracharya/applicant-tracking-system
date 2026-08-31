@@ -16,12 +16,10 @@ const AvatarUploader = ({ photoPath, onSelect, isUploading }) => {
     if (!file) return;
 
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      // eslint-disable-next-line no-alert
       alert("Please choose a JPG, PNG, or WEBP image.");
       return;
     }
     if (file.size > MAX_SIZE) {
-      // eslint-disable-next-line no-alert
       alert("Image must be under 2MB.");
       return;
     }
