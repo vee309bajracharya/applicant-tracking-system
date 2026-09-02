@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
         // seed all the roles and permissions first
         $this->call(RolesAndPermissionsSeeder::class);
 
+        // public demo account must never be created in prod.
+        if (!in_array(app()->environment(), ['local', 'testing'], true))
+            return;
+
         // create a default admin account
         $admin = User::firstOrCreate(
             ['email' => 'admin@ats.demo'],
