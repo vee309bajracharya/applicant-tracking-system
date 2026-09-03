@@ -1,9 +1,12 @@
-# Project: SmartHire ATS
 <img width="500" alt="download" src="https://github.com/user-attachments/assets/8be2cd72-07d9-4940-8728-f4e315bd5f63" />
+
+### Live Deployments
+* **Live App (Frontend):** [https://onrender.com](https://applicant-tracking-system-1-dr1h.onrender.com/login)
+* **API Engine (Backend):** [https://onrender.com](https://applicant-tracking-system-n5m5.onrender.com/)
 
 ## Introduction
 
-SmartHire ATS is a full-stack Applicant Tracking System that replaces spreadsheet-and-email hiring with a single pipeline: job postings, candidate applications, resume parsing, skill-based match scoring, interview scheduling, and role-based dashboards for Admins, HR Managers, Recruiters, and Candidates. It is built as a decoupled REST API (Laravel) with a separate single-page frontend (React), and enforces every permission on the server, never just in the UI.
+SmartHire ATS is a full-stack Applicant Tracking System that replaces spreadsheet-and-email hiring with a single pipeline: job postings, candidate applications, resume parsing, skill-based match scoring, interview scheduling, and role-based dashboards for Admins, HR Managers, Recruiters, and Candidates.
 
 The system supports four roles: 
 - **Admin** (platform and user management)
@@ -13,17 +16,17 @@ The system supports four roles:
 
 ## Key Features
 
-- Role-based access control across four roles, enforced server-side with Spatie Permission
-- Candidate registration, login, email verification, OTP password reset, and Google OAuth
+- RBAC across four roles, enforced server-side with Spatie Permission
+- Candidate registration, login, email verification, OTP password reset
 - Company and department management with staff assignment
 - Candidate profiles with resume upload, automatic text extraction, and skill tagging
 - Job posting lifecycle: draft, publish, close, archive, restore
 - A finite-state-machine-driven application pipeline (Applied to Hired) with an immutable status history
 - Automated candidate match scoring: skill overlap, experience fit, keyword matching, and a TF-IDF cosine similarity score, combined into one weighted final score
-- Skill gap analysis and ranked candidate lists per job
 - Interview scheduling with feedback and rating capture
 - Automated notifications on application and interview status changes
 - A rule-based FAQ chatbot for common platform questions
+- Hiring, Candidates and Interviews report download
 
 ## Tech Stack
 
@@ -31,7 +34,6 @@ The system supports four roles:
 | :--- | :--- | :--- |
 | **Backend Framework** | **Laravel 13** | ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) |
 | **Language (Backend)** | **PHP 8.3** | ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white) |
-| **Database** | **MySQL** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white) |
 | **Auth** | **Laravel Sanctum** | ![Sanctum](https://img.shields.io/badge/Sanctum-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) |
 | **Authorization** | **Spatie Permission** | ![Spatie](https://img.shields.io/badge/Spatie%20Permission-2D2D2D?style=for-the-badge) |
 | **Frontend Library** | **React 19** | ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black) |
@@ -42,7 +44,12 @@ The system supports four roles:
 | **Form Handling** | **React Hook Form + Yup** | ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white) |
 | **Animation** | **Framer Motion** | ![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white) |
 | **Package Manager** | **npm** | ![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) |
+| **API Testing** | **Bruno** | ![Bruno](https://img.shields.io/badge/Bruno-FF2800?style=for-the-badge&logo=bruno&logoColor=white) |
 | **CI/CD** | **GitHub Actions** | ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white) |
+| **Database (Dev)** | **MySQL** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white) |
+| **Database (Prod)** | **PostgreSQL** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white) |
+| **Containerization** | **Docker** | ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) |
+| **Cloud Hosting** | **Render** | ![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=black) |
 
 ## Prerequisites
 
@@ -103,6 +110,10 @@ The application will be available at `http://localhost:5173`.
 
 ### 4. Running tests
 
-Backend Pest tests are planned but not yet part of this repository; API endpoints have been verified manually through **Bruno** during development.
+The application utilizes **Pest PHP** for automated testing and execution validation. You can trigger the automated test suite locally by running:
 
+```bash
+cd back-end
+php artisan test
+```
 ---
