@@ -28,4 +28,4 @@ RUN ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage \
 
 USER www-data
 
-CMD ["sh", "-c", "set -e; php artisan migrate --force; php artisan db:seed --class=RolesAndPermissionsSeeder --force; php artisan db:seed --class=ProductionAdminSeeder --force; exec php -S 0.0.0.0:${PORT:-10000} -t public"]
+CMD ["sh", "-c", "set -e; php artisan migrate --force; php artisan db:seed --class=RolesAndPermissionsSeeder --force; php artisan db:seed --class=ProductionAdminSeeder --force; php artisan db:seed --class=ProductionDemoSeeder --force; exec php -S 0.0.0.0:${PORT:-10000} -t public"]
