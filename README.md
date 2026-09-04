@@ -1,8 +1,21 @@
 <img width="500" alt="download" src="https://github.com/user-attachments/assets/8be2cd72-07d9-4940-8728-f4e315bd5f63" />
 
-### Live Deployments
-* **Live App (Frontend):** [https://onrender.com](https://applicant-tracking-system-1-dr1h.onrender.com/login)
-* **API Engine (Backend):** [https://onrender.com](https://applicant-tracking-system-n5m5.onrender.com/)
+### Live Deployment
+* **Live App :** [https://applicant-tracking-system-render.com](https://applicant-tracking-system-1-dr1h.onrender.com/login)
+
+## Live Demo Portals
+Because the live platform is deployed on an isolated infrastructure tier without an active outbound SMTP mail server, manual candidate registration and live email verification are bypassed in production. 
+
+To explore the role-based dashboards and permissions enforced by the server, use these pre-verified public demo credentials:
+
+| Role Access | Email Address | Password |
+| :--- | :--- | :--- |
+| **System Admin** | `demo.admin@smarthire.live` | `smartHireDemo@123` |
+| **HR Manager** | `demo.hr_manager@smarthire.live` | `smartHireDemo@123` |
+| **Recruiter** | `demo.recruiter@smarthire.live` | `smartHireDemo@123` |
+| **Candidate** | `demo.candidate@smarthire.live` | `smartHireDemo@123` |
+
+*Note: The production database is periodically refreshed. Please do not store sensitive or real personal information on this public showcase platform.*
 
 ## Introduction
 
@@ -116,4 +129,9 @@ The application utilizes **Pest PHP** for automated testing and execution valida
 cd back-end
 php artisan test
 ```
+
+### License
+
+This project is proprietary software. All rights are reserved. Unauthorized copying, distribution, or modification of this code via any medium is strictly prohibited. See the [LICENSE](LICENSE) file for full conditions.
+
 ---
