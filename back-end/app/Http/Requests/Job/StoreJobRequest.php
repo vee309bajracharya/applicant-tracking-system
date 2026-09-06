@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Job;
 
+use App\Models\Department;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreJobRequest extends FormRequest
@@ -39,4 +41,25 @@ class StoreJobRequest extends FormRequest
             'skills.*.importance' => ['sometimes', 'in:required,preferred'],
         ];
     }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $companyId = $this->input('company_id');
+            $departmentId = $this->input('department_id');
+
+            if (!$companyId || !$departmentId)
+                return;
+
+            $department = Department::find($departmentId);
+
+            if ($department && (int) $department->company_id !== (int) $companyId) {
+                $validator->errors()->add(
+                    'department_id',
+                    'The selected department does not belong to the selected company.'
+                );
+            }
+        });
+    }
+
 }
