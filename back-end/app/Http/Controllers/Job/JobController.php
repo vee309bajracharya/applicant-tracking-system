@@ -9,10 +9,12 @@ use App\Http\Requests\Job\UpdateJobRequest;
 use App\Http\Resources\JobResource;
 use App\Models\Job;
 use App\Services\JobLifecycleService;
+use App\Traits\EnforcesCompanyScope;
 use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
+    use EnforcesCompanyScope;
     public function __construct(protected JobLifecycleService $lifecycle)
     {
 
@@ -66,6 +68,10 @@ class JobController extends Controller
 
     public function store(StoreJobRequest $request)
     {
+        //an HR Manager scoped to one company must not be able to create a job under a different company_id just by supplying it.
+        if ($request->user()->isScopedToCompany() && (int) $request->input('company_id') !== $request->user()->assignedCompanyId())
+            abort(403, 'You do not have permission to create a job for this company.');
+
         $job = Job::create([
             ...$request->safe()->except('skills'),
             'created_by' => $request->user()->id,
@@ -78,6 +84,8 @@ class JobController extends Controller
 
     public function update(UpdateJobRequest $request, Job $job)
     {
+        $this->assertJobCompanyAccess($request, $job);
+
         $job->update($request->safe()->except('skills'));
 
         if ($request->has('skills'))
@@ -88,13 +96,16 @@ class JobController extends Controller
 
     public function close(CloseJobRequest $request, Job $job)
     {
+        $this->assertJobCompanyAccess($request, $job);
         $job->update(['status' => 'closed']);
 
         return JobResource::make($job->fresh()->load($this->jobRelations()));
     }
 
-    public function destroy(Job $job)
+    public function destroy(Request $request, Job $job)
     {
+        $this->assertJobCompanyAccess($request, $job);
+
         $job->delete();
 
         return response()->json(['success' => true, 'message' => 'Job archived'], 200);
@@ -104,15 +115,20 @@ class JobController extends Controller
     {
         $query = Job::onlyTrashed()->with($this->jobRelations())->withCount('applications');
 
+        // an HR Manager must only see their own company's archived jobs.
+        if($request->user()->isScopedToCompany())
+            $query->where('company_id', $request->user()->assignedCompanyId());
+
         if ($search = $request->query('search'))
             $query->whereFullText(['title', 'description'], $search);
 
         return JobResource::collection($query->latest('deleted_at')->paginate(10));
     }
 
-    public function restore(int $job)
+    public function restore(Request $request, int $job)
     {
         $model = Job::onlyTrashed()->findOrFail($job);
+        $this->assertJobCompanyAccess($request, $model);
         $model->restore();
         $model->update(['status' => 'draft']);
 
